@@ -1,15 +1,16 @@
 import appStyles from "@/constants/Styles";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 
 type CircleContainerProps = {
     color?: string;
     radius: number;
     children?: React.ReactNode;
+    onPress?: () => void;
 }
 
-export default function CircleContainer({ color, radius, children }: CircleContainerProps) {
+export default function CircleContainer({ color, radius, children, onPress }: CircleContainerProps) {
     return (
-        <View style={[appStyles.circle, {
+        <Pressable onPress={onPress} style={[appStyles.circle, {
             backgroundColor: color ?? 'black',
             width: radius,
             height: radius,
@@ -18,6 +19,6 @@ export default function CircleContainer({ color, radius, children }: CircleConta
             justifyContent: 'center'
         }]}>
             {children}
-        </View>
+        </Pressable>
     )
 }

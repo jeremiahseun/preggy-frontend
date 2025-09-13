@@ -10,10 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.Preggy"
+      "bundleIdentifier": "com.preggy.ai"
     },
     "android": {
       "adaptiveIcon": {
+        
         "foregroundImage": "./assets/images/preggy-logo.png",
         "backgroundColor": "#ffffff"
       },

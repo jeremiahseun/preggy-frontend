@@ -9,6 +9,9 @@ import Row from '@/components/Row';
 import { GapColumn, GapRow } from '@/components/Gap';
 import { Colors } from '@/constants/Colors';
 import FoodTag from '@/components/FoodTag';
+import Column from '@/components/Column';
+import TitleListCard from '@/components/food_details/TitleListCard';
+
 
 export default function FoodDetailsScreen() {
     const navigation = useNavigation();
@@ -21,11 +24,11 @@ export default function FoodDetailsScreen() {
             headerRight: () => (
                 <Row>
                     <Pressable>
-                        <IconSymbol name="favorite" size={24} color={Colors.primary} />
+                        <IconSymbol name="heart" size={24} color={Colors.primary} />
                     </Pressable>
                     <GapRow space={15} />
                     <Pressable>
-                        <IconSymbol name="share" size={24} color={Colors.primary} />
+                        <IconSymbol name="square.and.arrow.up" size={24} color={Colors.primary} />
                     </Pressable>
                 </Row>
             ),
@@ -65,42 +68,57 @@ export default function FoodDetailsScreen() {
             headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
         >
             <ThemedView style={styles.contentContainer}>
+                <Row>
+                    <FoodTag type={foodType} />
+                    <View style={{ flex: 1 }} />
+                    <Column style={{ alignItems: 'flex-end' }}>
+                        <ThemedText type='small14'>Checked just now</ThemedText>
+                        <ThemedText type='small12'>Verified</ThemedText>
+                    </Column>
+                </Row>
+                <GapColumn space={20} />
                 <ThemedText type="title">{foodName || 'Jollof Rice with Chicken'}</ThemedText>
-                <GapColumn space={20} />
 
-                <FoodTag type={foodType} text={safetyInfo.text} />
                 <GapColumn space={15} />
-                <ThemedText>{safetyInfo.description}</ThemedText>
+                <ThemedText>This traditional Nigerian dish is generally safe during pregnancy when properly prepared with fresh ingredients.</ThemedText>
+                <GapColumn space={20} />
+                <Column style={{
+                    width: "100%",
+                    height: 'auto',
+                    borderRadius: 6,
+                    padding: 15,
+                    backgroundColor: '#FAFAFBFF',
+                }}>
+                    <ThemedText type="defaultSemiBold">Sources: WHO, NHS, ACOG</ThemedText>
+                    <ThemedText style={{
+                        fontWeight: '600'
+                    }} type="small14">Last verified: Dec 2024</ThemedText>
+                </Column>
+
                 <GapColumn space={20} />
 
-                <ThemedText type="subtitle">Why?</ThemedText>
-                <ThemedText>
-                    Jollof Rice with Chicken is a balanced meal, providing carbohydrates for energy and protein for growth. Chicken is a great source of lean protein, which is essential for your baby's development. Ensure the chicken is thoroughly cooked to an internal temperature of 165°F (74°C) to eliminate any harmful bacteria like Salmonella.
-                </ThemedText>
+                <ThemedText type="subtitle">Key Information</ThemedText>
+                <GapColumn space={20} />
+                <TitleListCard title='Nutritional Benefits' information={['Rich in protein from chicken', 'Provides essential carbohydrates', 'Contains vitamins from vegetables']} />
+
+                <GapColumn space={20} />
+                <TitleListCard title='Preparation Guidelines' information={['Ensure chicken is thoroughly cooked (165°F/74°C)', 'Use fresh, properly stored ingredients', 'Avoid if left at room temperature for >2 hours']} />
+
                 <GapColumn space={20} />
 
-                <ThemedText type="subtitle">Nutritional Information</ThemedText>
-                <GapColumn space={10} />
-                <View style={styles.nutritionRow}>
-                    <ThemedText>Calories</ThemedText>
-                    <ThemedText>450 kcal</ThemedText>
-                </View>
-                <View style={styles.nutritionRow}>
-                    <ThemedText>Protein</ThemedText>
-                    <ThemedText>30g</ThemedText>
-                </View>
-                <View style={styles.nutritionRow}>
-                    <ThemedText>Carbohydrates</ThemedText>
-                    <ThemedText>50g</ThemedText>
-                </View>
-                <View style={styles.nutritionRow}>
-                    <ThemedText>Fat</ThemedText>
-                    <ThemedText>15g</ThemedText>
-                </View>
+                <Column style={{
+                    width: "100%",
+                    height: 'auto',
+                    borderRadius: 6,
+                    padding: 15,
+                    backgroundColor: '#FAFAFBFF',
+                }}>
+                    <ThemedText type="subTitle">2nd Trimester Notes</ThemedText>
+                    <GapColumn space={5} />
+                    <ThemedText>Perfect for your current stage! The protein and iron content support your baby's growth and can help with increased appetite.</ThemedText>
+                </Column>
                 <GapColumn space={20} />
 
-                <ThemedText type="subtitle">Sources</ThemedText>
-                <ThemedText>NHS, American Pregnancy Association, FDA</ThemedText>
             </ThemedView>
         </ParallaxScrollView>
     );
@@ -112,7 +130,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     contentContainer: {
-        padding: 20,
+        padding: 0,
     },
     nutritionRow: {
         flexDirection: 'row',

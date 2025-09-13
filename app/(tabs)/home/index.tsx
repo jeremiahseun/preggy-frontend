@@ -143,8 +143,10 @@ export default function HomeScreen() {
     )
 
     return (
-        <ThemedView style={[appStyles.screen, {
+        <ThemedView style={[{
             paddingTop: insets.top,
+            flex: 1,
+            paddingHorizontal: 24
         }]}>
             <FlatList
                 data={recentChecksList}
@@ -155,6 +157,7 @@ export default function HomeScreen() {
                     item.type === 'safe' ? 'safe' : item.type === 'limit' ? 'limit' : 'avoid'
                 } date={item.date} title={item.name} source={item.source} description={item.description} />}
                 ListHeaderComponent={renderListHeader}
+                ListFooterComponent={() => <GapColumn space={50} />}
             >
             </FlatList>
         </ThemedView>

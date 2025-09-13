@@ -1,26 +1,33 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useSegments } from 'expo-router';
 import React from 'react';
 
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const segments = useSegments();
+
+  // On a top-level tab, the segments array will be like ['(tabs)', 'home']
+  // On a nested screen, it will be like ['(tabs)', 'home', 'food-details']
+  // So, we hide the tab bar if there are more than 2 segments.
+  const display = segments.length > 2 ? 'none' : 'flex';
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        animation: 'shift',
+        animation: "shift",
+        tabBarStyle: { display: display },
       }}>
       <Tabs.Screen
         name="home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+            <IconSymbol name={focused ? 'house.fill' : 'house.fill'} color={color} />
           ),
         }}
       />
@@ -29,7 +36,7 @@ export default function TabLayout() {
         options={{
           title: 'Plans',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'reader' : 'reader-outline'} color={color} />
+            <IconSymbol name="menucard" color={color} />
           ),
         }}
       />
@@ -38,7 +45,7 @@ export default function TabLayout() {
         options={{
           title: 'Chats',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'chatbubbles' : 'chatbubbles-outline'} color={color} />
+            <IconSymbol name="message" color={color} />
           ),
         }}
       />
@@ -47,7 +54,7 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'settings' : 'settings-outline'} color={color} />
+            <IconSymbol name="gear" color={color} />
           ),
         }}
       />

@@ -20,7 +20,7 @@ const appStyles = StyleSheet.create({
     },
     screen: {
         flex: 1,
-        padding: 24,
+        paddingHorizontal: 24,
     },
     authContainer: {
         flex: 1,

@@ -1,9 +1,7 @@
-// Fallback for using MaterialIcons on Android and web.
-
+import { Platform, OpaqueColorValue, type StyleProp, type TextStyle, ViewStyle } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
+import { SymbolView, SymbolWeight, SymbolViewProps } from 'expo-symbols';
 import { ComponentProps } from 'react';
-import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
 type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
 type IconSymbolName = keyof typeof MAPPING;
@@ -18,6 +16,13 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'camera': 'camera-alt',
+  'pencil': 'edit',
+  'heart': 'favorite-border',
+  'arrow.up': 'share',
+  'menucard': 'menu-book',
+  'message': 'chat',
+  'gear': 'settings',
 } as IconMapping;
 
 /**
@@ -26,16 +31,21 @@ const MAPPING = {
  * Icon `name`s are based on SF Symbols and require manual mapping to Material Icons.
  */
 export function IconSymbol({
-  name,
-  size = 24,
-  color,
-  style,
+    name,
+    size = 24,
+    color,
+    style,
+    weight,
 }: {
-  name: IconSymbolName;
-  size?: number;
-  color: string | OpaqueColorValue;
-  style?: StyleProp<TextStyle>;
-  weight?: SymbolWeight;
+    name: IconSymbolName;
+    size?: number;
+    color: string | OpaqueColorValue;
+    style?: StyleProp<any>;
+    weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+    if (Platform.OS === 'ios') {
+        return <SymbolView name={name} size={size} tintColor={color} style={style} weight={weight} />;
+    }
+
+    return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
 }
