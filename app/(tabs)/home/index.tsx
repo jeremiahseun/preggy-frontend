@@ -8,7 +8,7 @@ import Row from '@/components/Row';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedScrollView, ThemedView } from '@/components/ThemedView';
 import appStyles from '@/constants/Styles';
-import { Link } from 'expo-router';
+import { Link, Redirect } from 'expo-router';
 import { FlatList, Image, Platform, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -142,24 +142,25 @@ export default function HomeScreen() {
         </ThemedView>
     )
 
-    return (
-        <ThemedView style={[{
-            paddingTop: insets.top,
-            flex: 1,
-            paddingHorizontal: 24
-        }]}>
-            <FlatList
-                data={recentChecksList}
-                keyExtractor={(item) => item.name}
-                showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={() => <GapColumn space={20} />}
-                renderItem={({ item }) => <FoodItemCard type={
-                    item.type === 'safe' ? 'safe' : item.type === 'limit' ? 'limit' : 'avoid'
-                } date={item.date} title={item.name} source={item.source} description={item.description} />}
-                ListHeaderComponent={renderListHeader}
-                ListFooterComponent={() => <GapColumn space={50} />}
-            >
-            </FlatList>
-        </ThemedView>
-    );
+    return <Redirect href='/home/food-details' />
+    // (
+    //     <ThemedView style={[{
+    //         paddingTop: insets.top,
+    //         flex: 1,
+    //         paddingHorizontal: 24
+    //     }]}>
+    //         <FlatList
+    //             data={recentChecksList}
+    //             keyExtractor={(item) => item.name}
+    //             showsVerticalScrollIndicator={false}
+    //             ItemSeparatorComponent={() => <GapColumn space={20} />}
+    //             renderItem={({ item }) => <FoodItemCard type={
+    //                 item.type === 'safe' ? 'safe' : item.type === 'limit' ? 'limit' : 'avoid'
+    //             } date={item.date} title={item.name} source={item.source} description={item.description} />}
+    //             ListHeaderComponent={renderListHeader}
+    //             ListFooterComponent={() => <GapColumn space={50} />}
+    //         >
+    //         </FlatList>
+    //     </ThemedView>
+    // );
 }

@@ -1,22 +1,23 @@
 import { Colors } from "@/constants/Colors";
 import { useState } from "react";
-import { ActivityIndicator, View, Image, StyleSheet } from "react-native";
+import { ActivityIndicator, View, Image, StyleSheet, ImageStyle, StyleProp } from "react-native";
 
 type ImageViewProps = {
     uri: string;
     height?: number;
     width?: number;
     borderRadius?: number;
+    imageStyle?: StyleProp<ImageStyle>
 }
 
-export default function ImageView({ uri, height, width, borderRadius } : ImageViewProps) {
+export default function ImageView({ uri, height, width, borderRadius, imageStyle } : ImageViewProps) {
     const [isLoading, setIsLoading] = useState(false);
     return (
         <View style={[styles.imageContainer, height ? { height } : undefined, width ? { width } : undefined, borderRadius ? { borderRadius } : undefined]}>
             <Image
                 resizeMode='cover'
                 source={{ uri: uri }}
-                style={[styles.image, height ? { height } : undefined, width ? { width } : undefined, borderRadius ? { borderRadius } : undefined]}
+                style={[styles.image, height ? { height } : undefined, width ? { width } : undefined, borderRadius ? { borderRadius } : undefined, imageStyle]}
                 onLoadStart={() => setIsLoading(true)}
                 onLoadEnd={() => setIsLoading(false)}
             />
