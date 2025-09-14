@@ -80,7 +80,7 @@ export default function FoodDetailsScreen() {
             headerImage={<Image source={{ uri: foodImage || 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }} style={styles.image} />}
             headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
         >
-            <AvoidFoodDetailsView
+            {/* <AvoidFoodDetailsView
                 name='Jollof Rice with Chicken'
                 whyAvoidDescription='This traditional Nigerian dish is generally safe during pregnancy when properly prepared with fresh ingredients.'
                 sources='WHO, NHS, ACOG'
@@ -117,7 +117,7 @@ export default function FoodDetailsScreen() {
                     }
 
                 ]}
-            />
+            /> */}
             {/* <LimitFoodDetailsView
                 name='Jollof Rice with Chicken'
                 description='This traditional Nigerian dish is generally safe during pregnancy when properly prepared with fresh ingredients.'
@@ -153,7 +153,7 @@ export default function FoodDetailsScreen() {
 
                 ]}
             /> */}
-            {/* <SafeFoodDetailsView
+            <SafeFoodDetailsView
                 name='Jollof Rice with Chicken'
                 description='This traditional Nigerian dish is generally safe during pregnancy when properly prepared with fresh ingredients.'
                 sources='WHO, NHS, ACOG'
@@ -186,7 +186,7 @@ export default function FoodDetailsScreen() {
                     }
 
                 ]}
-            /> */}
+            />
         </ParallaxScrollView>
     );
 }

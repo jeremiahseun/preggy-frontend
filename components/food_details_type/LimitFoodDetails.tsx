@@ -1,11 +1,9 @@
 import { Colors } from "@/constants/Colors";
 import React from "react";
 import { View, ScrollView, useColorScheme } from "react-native";
-import { IconButton } from "../Buttons";
+import { IconButton, TextButton } from "../Buttons";
 import Column from "../Column";
-import InfoCard from "../food_details/InfoCard";
 import SimilarFoodItem from "../food_details/SimilarFoodItem";
-import TitleListCard from "../food_details/TitleListCard";
 import FoodTag from "../FoodTag";
 import { GapRow, GapColumn } from "../Gap";
 import Row from "../Row";
@@ -14,6 +12,10 @@ import { ThemedView } from "../ThemedView";
 import LeafIcon from '@/assets/icons/leaf.svg';
 import CheckIcon from '@/assets/icons/check.svg';
 import CalendarIcon from '@/assets/icons/calendar.svg';
+import AlertIcon from '@/assets/icons/alert.svg';
+import BorderContainer from "../widgets/BorderContainer";
+import CircleContainer from "../CircleContainer";
+import InfoCard from "../food_details/InfoCard";
 import InfoIcon from '@/assets/icons/info.svg';
 import ListCheckIcon from '@/assets/icons/listcheck.svg';
 
@@ -42,64 +44,169 @@ export default function LimitFoodDetailsView({ name, description, sources, verif
     const isDarkMode = useColorScheme() === 'dark';
     return (
         <ThemedView style={{
-            padding: 0,
+            paddingHorizontal: 20,
         }}>
-            <Row>
-                <FoodTag type={'limit'} />
-                <View style={{ flex: 1 }} />
-                <Column style={{ alignItems: 'flex-end' }}>
-                    <ThemedText type='small14'>Checked just now</ThemedText>
+
+            <BorderContainer
+                darkModeBorderColor="#755707"
+                lightModeBorderColor="#FFC700"
+                darkModeFillColor="#1c1a01"
+                lightModeFillColor="#fffbeb"
+            >
+                <Row>
+                    <FoodTag type={'limit'} />
+                    <View style={{ flex: 1 }} />
+                    <Column style={{ alignItems: 'flex-end' }}>
+                        <ThemedText type='small14'>Checked just now</ThemedText>
+                        <Row style={{
+                            alignItems: 'center'
+                        }}>
+                            <CheckIcon color={'#4AC477FF'} width={12} height={12} />
+                            <GapRow space={5} />
+                            <ThemedText lightColor="green" darkColor="green" type='small12'>Verified</ThemedText>
+                        </Row>
+                    </Column>
+                </Row>
+                <GapColumn space={20} />
+                <ThemedText type="title">{name}</ThemedText>
+
+                <GapColumn space={15} />
+                <BorderContainer
+                    darkModeBorderColor="#755707"
+                    lightModeBorderColor="#FFC700"
+                    darkModeFillColor="#2e2a0b"
+                    lightModeFillColor="#fff5cc"
+                >
+                    <ThemedText lightColor="#8B6F00" darkColor="#FFD700" type="defaultSemiBold">Limit consumption during pregnancy</ThemedText>
+                    <GapColumn space={10} />
+                    <ThemedText>{description}</ThemedText>
+                </BorderContainer>
+                <GapColumn space={20} />
+                <Column style={{
+                    width: "100%",
+                    height: 'auto',
+                    borderRadius: 6,
+                    padding: 15,
+                    backgroundColor: isDarkMode ? '#171a1f' : '#FAFAFBFF',
+                }}>
+                    <Row style={{
+                        alignItems: 'center'
+                    }}>
+                        <LeafIcon color={'#4AC477FF'} width={16} height={16} />
+                        <GapRow space={10} />
+                        <ThemedText type="defaultSemiBold">Sources: {sources}</ThemedText>
+                    </Row>
                     <Row style={{
                         alignItems: 'center'
                     }}>
                         <CheckIcon color={'#4AC477FF'} width={12} height={12} />
-                        <GapRow space={5} />
-                        <ThemedText type='small12'>Verified</ThemedText>
+                        <GapRow space={10} />
+                        <ThemedText style={{
+                            fontWeight: '600'
+                        }} type="small14"> Last verified: {verifiedDate}</ThemedText>
                     </Row>
                 </Column>
-            </Row>
-            <GapColumn space={20} />
-            <ThemedText type="title">{name}</ThemedText>
+            </BorderContainer>
 
-            <GapColumn space={15} />
-            <ThemedText>{description}</ThemedText>
-            <GapColumn space={20} />
-            <Column style={{
-                width: "100%",
-                height: 'auto',
-                borderRadius: 6,
-                padding: 15,
-                backgroundColor: isDarkMode ? '#171a1f' : '#FAFAFBFF',
-            }}>
-                <Row style={{
-                    alignItems: 'center'
-                }}>
-                    <LeafIcon color={'#4AC477FF'} width={16} height={16} />
-                    <GapRow space={10} />
-                    <ThemedText type="defaultSemiBold">Sources: {sources}</ThemedText>
-                </Row>
-                <Row style={{
-                    alignItems: 'center'
-                }}>
-                    <CheckIcon color={'#4AC477FF'} width={12} height={12} />
-                    <GapRow space={10} />
-                    <ThemedText style={{
-                        fontWeight: '600'
-                    }} type="small14"> Last verified: {verifiedDate}</ThemedText>
-                </Row>
-            </Column>
-
-            <GapColumn space={20} />
+            <GapColumn space={40} />
 
             <ThemedText type="subtitle">Key Information</ThemedText>
             <GapColumn space={20} />
-            <TitleListCard type='limit' title='Safe Consumption Guidelines' information={safeConsumptionGuidelines} />
+
+            <BorderContainer
+                darkModeBorderColor="#969393"
+                lightModeBorderColor="grey"
+                darkModeFillColor=''
+                lightModeFillColor="white"
+            >
+                <Row style={{
+                    alignItems: 'center'
+                }}>
+                    <CircleContainer color={isDarkMode ? "black" : '#fffbeb'} radius={40}>
+                        <ThemedText>⏰</ThemedText>
+                    </CircleContainer>
+                    <GapRow space={15} />
+                    <ThemedText style={{
+                        fontWeight: '700'
+                    }} type="defaultSemiBold">Safe Consumption Guidelines</ThemedText>
+                </Row>
+                <GapColumn space={20} />
+                {safeConsumptionGuidelines.map((cause, index) => (
+                    <Row key={index} style={{ alignItems: 'baseline', marginBottom: 5 }}>
+                        <ThemedText lightColor="#FFC700" darkColor="#FFC700" style={{ marginRight: 10 }}>{"🔘"}</ThemedText>
+                        <ThemedText>{cause}</ThemedText>
+                    </Row>
+                ))}
+            </BorderContainer>
 
             <GapColumn space={20} />
-            <TitleListCard type='avoid' title='Health Considerations' information={healthConsiderations} />
+
+            <BorderContainer
+                darkModeBorderColor="#750707"
+                lightModeBorderColor="red"
+                darkModeFillColor=''
+                lightModeFillColor="white"
+            >
+
+                <Row style={{
+                    alignItems: 'center'
+                }}>
+                    <CircleContainer color={isDarkMode ? "black" : '#fce6e6'} radius={40}>
+                        <AlertIcon width={20} height={20} />
+                    </CircleContainer>
+                    <GapRow space={15} />
+                    <ThemedText style={{
+                        fontWeight: '700'
+                    }} type="defaultSemiBold">Health Considerations</ThemedText>
+                </Row>
+
+                <GapColumn space={20} />
+                {healthConsiderations.map((cause, index) => (
+                    <Row key={index} style={{ alignItems: 'baseline', marginBottom: 5 }}>
+                        <ThemedText lightColor="red" darkColor="red" style={{ marginRight: 10 }}>{"\u2715"}</ThemedText>
+                        <ThemedText>{cause}</ThemedText>
+                    </Row>
+                ))}
+            </BorderContainer>
 
             <GapColumn space={20} />
-            <TitleListCard type='safe' title='Better Alternatives' information={betterAlternatives} />
+
+            <BorderContainer
+                darkModeBorderColor="green"
+                lightModeBorderColor="#046610"
+                darkModeFillColor='#011a07'
+                lightModeFillColor="white"
+            >
+                <Row style={{
+                    alignItems: 'center'
+                }}>
+                    <CircleContainer color={isDarkMode ? "black" : '#afe0bb'} radius={40}>
+                        <ThemedText>💚</ThemedText>
+                    </CircleContainer>
+                    <GapRow space={15} />
+                    <ThemedText style={{
+                        fontWeight: '700'
+                    }} type="defaultSemiBold">Better Alternatives</ThemedText>
+                </Row>
+                <GapColumn space={20} />
+                {betterAlternatives.map((alternative, index) => (
+                    <Column key={index}>
+                        <Row style={{
+                            alignItems: 'center'
+                        }}>
+                            <ThemedText type="defaultSemiBold" style={{
+                                flex: 1,
+                                backgroundColor: isDarkMode ? '' : '', padding: 10,
+                                borderRadius: 10
+                            }} >{alternative}</ThemedText>
+                            <TextButton type="replace" title="Learn More →" navigateTo={'/(tabs)/home/food-details'} style={{
+                                fontSize: 12,
+                            }} />
+                        </Row>
+                        <GapColumn space={10} />
+                    </Column>
+                ))}
+            </BorderContainer>
 
             <GapColumn space={20} />
 
