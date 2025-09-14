@@ -11,7 +11,7 @@ import { GapColumn } from '@/components/Gap';
 import CircularCheckbox from '@/components/CircularCheckbox';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import Row from '@/components/Row';
-import { AuthButton } from '@/components/Buttons';
+import { AuthButton, NormalButton } from '@/components/Buttons';
 
 const foodOptions = [
     "Yes, this is Jollof Rice with Chicken",
@@ -74,8 +74,7 @@ export default function ConfirmFoodItemScreen() {
                             />
                         </Row>
                     </Pressable>
-
-                    <AuthButton title="Continue" navigateTo="/(tabs)/home/food-details" />
+                    <NormalButton type='replace' title="Continue" navigateTo="/(tabs)/home/food-details" />
                     <GapColumn space={40} />
                 </Column>
             </ThemedScrollView>

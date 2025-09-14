@@ -12,7 +12,17 @@ type AuthButtonProps = {
     style?: object;
     textStyle?: object;
     textColor?: string;
+    type?: 'push' | 'replace' | 'dismissTo';
 };
+
+function NormalButton({ title, navigateTo, style, textStyle, type = 'push' }: AuthButtonProps) {
+    const router = useRouter();
+    return (
+        <TouchableOpacity style={[appStyles.button, style]} onPress={() => type === 'push' ? router.push(navigateTo) : type === 'replace' ? router.replace(navigateTo) : router.dismissTo(navigateTo)}>
+            <Text style={[appStyles.buttonText, textStyle]}>{title}</Text>
+        </TouchableOpacity>
+    );
+}
 
 function AuthButton({ title, navigateTo, style, textStyle }: AuthButtonProps) {
     const router = useRouter();
@@ -23,12 +33,12 @@ function AuthButton({ title, navigateTo, style, textStyle }: AuthButtonProps) {
     );
 }
 
-function TextButton({ title, navigateTo, textColor, style }: AuthButtonProps) {
+function TextButton({ title, navigateTo, textColor, style, type = 'push' }: AuthButtonProps) {
     const router = useRouter();
 
     return (
-        <TouchableOpacity onPress={() => router.push(navigateTo)}>
-            <Text style={[style, appStyles.buttonText, { color: textColor ?? "#000"}]}>{title}</Text>
+        <TouchableOpacity onPress={() => type === 'push' ? router.push(navigateTo) : type === 'replace' ? router.replace(navigateTo) : router.dismissTo(navigateTo)}>
+            <Text style={[appStyles.buttonText, { color: textColor ?? "#000" }, style]}>{title}</Text>
         </TouchableOpacity>
     );
 }
@@ -63,4 +73,4 @@ function IconButton({ title, iconName, onPress, buttonColor, textColor, style }:
     );
 }
 
-export { AuthButton, TextButton, IconButton };
+export { AuthButton, TextButton, IconButton, NormalButton };

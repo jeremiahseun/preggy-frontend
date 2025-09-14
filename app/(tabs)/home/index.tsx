@@ -8,8 +8,8 @@ import Row from '@/components/Row';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedScrollView, ThemedView } from '@/components/ThemedView';
 import appStyles from '@/constants/Styles';
-import { Link, Redirect } from 'expo-router';
-import { FlatList, Image, Platform, TextInput, View } from 'react-native';
+import { Link, Redirect, useNavigation, useRouter } from 'expo-router';
+import { FlatList, Image, Platform, Pressable, TextInput, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const recentChecksList = [
@@ -66,6 +66,7 @@ const recentChecksList = [
 
 export default function HomeScreen() {
     const insets = useSafeAreaInsets();
+    const router = useRouter();
 
     const renderListHeader = () => (
         <ThemedView>
@@ -136,7 +137,7 @@ export default function HomeScreen() {
                 <ThemedText style={{
                     flex: 1
                 }} type="subtitle">Recent Checks</ThemedText>
-                                <Link href="/home/all-checks" asChild>
+                <Link href="/home/all-checks" asChild>
                     <ThemedText type="link">View All</ThemedText>
                 </Link>
             </Row>
@@ -155,7 +156,9 @@ export default function HomeScreen() {
                 keyExtractor={(item) => item.name}
                 showsVerticalScrollIndicator={false}
                 ItemSeparatorComponent={() => <GapColumn space={20} />}
-                renderItem={({ item }) => <FoodItemCard type={
+                renderItem={({ item }) => <FoodItemCard onTap={() => {
+                    router.push("/(tabs)/home/food-details")
+                }} type={
                     item.type === 'safe' ? 'safe' : item.type === 'limit' ? 'limit' : 'avoid'
                 } date={item.date} title={item.name} source={item.source} description={item.description} />}
                 ListHeaderComponent={renderListHeader}

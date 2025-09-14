@@ -1,11 +1,11 @@
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Platform, useColorScheme, Pressable, PressableProps, ViewStyle } from "react-native"
+import { Platform, useColorScheme, Pressable, PressableProps, ViewStyle, TouchableOpacity, TouchableOpacityProps } from "react-native"
 
+import { StyleProp } from 'react-native';
 type BoxContainerProps = {
     children: React.ReactNode;
-    props?: PressableProps;
-    style: ViewStyle;
-}
+    style?: StyleProp<ViewStyle>;
+} & TouchableOpacityProps;
 
 
 export default function BoxContainer({ children, style, ...props }: BoxContainerProps) {
@@ -13,7 +13,7 @@ export default function BoxContainer({ children, style, ...props }: BoxContainer
     const isDarkMode = useColorScheme() === 'dark';
 
     return (
-        <Pressable style={[{
+        <TouchableOpacity style={[{
             height: 160,
             width: 'auto',
             borderRadius: 16,
@@ -34,6 +34,6 @@ export default function BoxContainer({ children, style, ...props }: BoxContainer
             {...props}
         >
             {children}
-        </Pressable>
+        </TouchableOpacity>
     )
 }

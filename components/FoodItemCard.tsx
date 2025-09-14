@@ -1,3 +1,4 @@
+import { GestureResponderEvent } from "react-native";
 import BoxContainer from "./BoxContainer";
 import CircleContainer from "./CircleContainer";
 import Column from "./Column";
@@ -12,12 +13,13 @@ type FoodItemCardProps = {
     description: string;
     source: string;
     date: string;
+    onTap: () => void;
 }
 
 
-export default function FoodItemCard(props : FoodItemCardProps) {
+export default function FoodItemCard(props: FoodItemCardProps) {
     return (
-        <BoxContainer style={{
+        <BoxContainer onPress={props.onTap} style={{
             padding: 15,
             height: 'auto',
         }}>
@@ -36,7 +38,7 @@ export default function FoodItemCard(props : FoodItemCardProps) {
                 <GapColumn space={10} />
                 <ThemedText type="default">{props.description}</ThemedText>
                 <GapColumn space={10} />
-                <ThemedText type="small">{props.source}</ThemedText>
+                <ThemedText type="small12">{props.source}</ThemedText>
             </Column>
         </BoxContainer>
     )

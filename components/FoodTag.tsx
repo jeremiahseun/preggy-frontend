@@ -8,9 +8,11 @@ type FoodTagProps = ViewProps & {
 
 export default function FoodTag({ type, style }: FoodTagProps) {
     return <View style={[{
-        width: 70,
-        height: 40,
-        backgroundColor: type === 'limit' ? '#F4A462FF' : type === 'safe' ? '#4AC477FF' : '#F5635BFF',
+        width: "auto",
+        height: "auto",
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        backgroundColor: type === 'limit' ? '#F4A462FF' : type === 'safe' ? '#4AC477FF' : 'red',
         borderRadius: 100,
         alignItems: 'center',
         justifyContent: 'center'
