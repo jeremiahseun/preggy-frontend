@@ -63,12 +63,12 @@ export default function RegisterScreen() {
             />
             <TextButton style={{
                 alignSelf: 'flex-end'
-            }} title="Forgot Password" textColor={Colors.primary} navigateTo="/(auth)/forgot-password" />
-            <AuthButton title="Sign In" navigateTo={"/(tabs)/home"} />
+            }} title="Forgot Password" textColor={Colors.primary} navigateTo="/forgot-password" />
+            <AuthButton title="Register" navigateTo={"/RegisterOnboarding"} />
             <GapColumn space={30} />
             <TextButton style={{
                 alignSelf: 'center'
-            }} title="Create New Account" textColor={Colors.primary} navigateTo="/(auth)/register" />
+            }} title="Already a User? Login" textColor={Colors.primary} navigateTo="/login" />
         </ThemedScrollView>
     );
 }

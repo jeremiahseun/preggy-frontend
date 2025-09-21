@@ -40,6 +40,31 @@ type LimitFoodDetailsProps = {
     saferAlternatives: LimitAlternativeFoodItem[];
 }
 
+/**
+ * LIMIT FOOD DETAILS API RESPONSE (Region specific for choice of words)
+ * {
+ * name: "" // Name of the food
+ * description: "" // A short description of the food. Usually containing region-aware words.
+ * sources: "" // List of strings into one string
+ * verifiedDate: "" // Date (Month and Year) E.g: Dec, 2024
+ * safeConsumptionGuidelines: []&lt;string&gt; // List of guidelines for safe consumption.
+ * healthConsiderations: []&lt;string&gt; // List of health considerations the user should look out.
+ * betterAlternatives: []&lt;string&gt; // List of better food alternatives.
+ * trimesterNotes: "" // Special (short) notes based on the user trimester period.
+ * whyLimitThisFood: "" // A short reason note why to limit this food item.
+ * ifYouChooseToConsume: []&lt;string&gt; // List of things to do if you choose to consume.
+ * saferAlternatives: []&lt;LimitAlternativeFoodItem&gt; // List of foods that are safer alternatives. They can only be safe.
+ * }
+ *
+ * SAFER ALTERNATIVES RESPONSE
+ * {
+ *  name: "" // Name of food
+ *  type: "" // Safe type (safe | limit | avoid)
+ *  description: "" // A short description of the food
+ *  image: "" // The food image
+ * }
+ */
+
 export default function LimitFoodDetailsView({ name, description, sources, verifiedDate, safeConsumptionGuidelines, healthConsiderations, betterAlternatives, trimesterNotes, whyLimitThisFood, ifYouChooseToConsume, saferAlternatives }: LimitFoodDetailsProps) {
     const isDarkMode = useColorScheme() === 'dark';
     return (

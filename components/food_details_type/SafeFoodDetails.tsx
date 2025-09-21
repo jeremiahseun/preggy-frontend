@@ -39,6 +39,30 @@ type SafeFoodDetailsProps = {
     similarFoods: SafeSimilarFoodItem[];
 }
 
+/**
+ * SAFE FOOD DETAILS API RESPONSE (Region specific for choice of words)
+ * {
+ * name: "" // Name of the food
+ * description: "" // A short description of the food. Usually containing region-aware words.
+ * sources: "" // List of strings into one string
+ * verifiedDate: "" // Date (Month and Year) E.g: Dec, 2024
+ * nutritionalBenefits: []<string> // List of nutritional benefits. Max of 1-3
+ * preparationGuidelines: []<string> // List of guidelines when preparing this food. Max of 1-3
+ * trimesterNotes: "" // Special (short) notes based on the user trimester period.
+ * whyItThisSafe: "" // A short reason note this food item is safe.
+ * ingredientsToWatch: []<string> // The list of ingredients the user should look out for when cooking. Very short note list.
+ * similarFoods: []<SafeSimilarFoodItem> // List of foods that are close to this kind of food. They can be safe, limit or avoid.
+ * }
+ *
+ * SIMILAR FOOD RESPONSE
+ * {
+ *  name: "" // Name of food
+ *  type: "" // Safe type (safe | limit | avoid)
+ *  description: "" // A short description of the food
+ *  image: "" // The food image
+ * }
+ */
+
 export default function SafeFoodDetailsView({ name, description, sources, verifiedDate, nutritionalBenefits, preparationGuidelines, trimesterNotes, whyItThisSafe, ingredientsToWatch, similarFoods }: SafeFoodDetailsProps) {
     const isDarkMode = useColorScheme() === 'dark';
     return (

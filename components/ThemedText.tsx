@@ -27,9 +27,9 @@ export function ThemedText({
         type === 'subtitle' ? styles.subtitle : undefined,
         type === 'subTitle' ? styles.subTitle : undefined,
         type === 'link' ? styles.link : undefined,
-              type === 'small12' ? { fontSize: 12, color: '#565D6DFF'} : undefined,
-              type === 'small14' ? { fontSize: 14, color: '#565D6DFF'} : undefined,
-              type === 'small16' ? { fontSize: 16, color: '#565D6DFF'} : undefined,
+              type === 'small12' ? { fontSize: 12, } : undefined, // color: '#565D6DFF'
+              type === 'small14' ? { fontSize: 14} : undefined,
+              type === 'small16' ? { fontSize: 16} : undefined,
         style,
       ]}
       {...rest}

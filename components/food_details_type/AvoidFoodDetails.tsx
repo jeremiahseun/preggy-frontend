@@ -50,6 +50,43 @@ type AvoidFoodDetailsProps = {
     foodsContainingSelectedFoods: FoodsContainingSelectedFoodItem[];
 }
 
+/**
+ * AVOID FOOD DETAILS API RESPONSE (Region specific for choice of words)
+ * {
+ * name: "" // Name of the food
+ * whyAvoidDescription: "" // A short description of why to avoid the food.
+ * sources: "" // List of strings into one string
+ * verifiedDate: "" // Date (Month and Year) E.g: Dec, 2024
+ * whyAvoidRisk: []&lt;WhyAvoidRisk&gt; // List of risks associated with the food.
+ * otherConsiderations: []&lt;string&gt; // List of other considerations the user should know.
+ * betterAlternatives: []&lt;string&gt; // List of better food alternatives.
+ * safeCookingGuidelines: []&lt;string&gt; // List of guidelines for safe cooking.
+ * foodsContainingSelectedFoods: []&lt;FoodsContainingSelectedFoodItem&gt; // List of foods containing the selected food item.
+ * }
+ *
+ * WHY AVOID RISK RESPONSE
+ * {
+ *  nameOfRisk: "" // Name of the risk
+ *  levelOfRisk: "" // Level of the risk (2 words: "{high, medium or low} risk")
+ *  description: "" // A short description of the risk
+ *  causesOfRisk: []&lt;string&gt; // List of causes of the risk
+ * }
+ *
+ * FOODS CONTAINING SELECTED FOOD ITEM RESPONSE
+ * {
+ *  name: "" // Name of the food
+ *  description: "" // Short description of 2-4 words
+ * }
+ *
+ * AVOID ALTERNATIVE FOOD ITEM RESPONSE
+ * {
+ *  name: "" // Name of food
+ *  type: "" // Safe type (safe | limit | avoid)
+ *  description: "" // A short description of the food
+ *  image: "" // The food image
+ * }
+ */
+
 export default function AvoidFoodDetailsView({ name, whyAvoidDescription, sources, verifiedDate, whyAvoidRisk, otherConsiderations, betterAlternatives, safeCookingGuidelines, foodsContainingSelectedFoods }: AvoidFoodDetailsProps) {
     const isDarkMode = useColorScheme() === 'dark';
     return (

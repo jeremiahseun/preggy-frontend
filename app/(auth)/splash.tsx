@@ -1,15 +1,25 @@
-import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Link } from 'expo-router';
-import { StyleSheet, Button } from 'react-native';
+import { router } from 'expo-router';
+import { useEffect } from 'react';
+import { Image, StyleSheet } from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
 
 export default function SplashScreen() {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.replace('/(auth)/onboarding-1');
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">Splash Screen</ThemedText>
-      <Link href="/(auth)/register" asChild>
-        <Button title="Go to Register" />
-      </Link>
+      <Image
+        style={styles.logo}
+        source={require('../../assets/images/preggy-no-bg.png')}
+      />
+      <ThemedText type="title">Preggy</ThemedText>
     </ThemedView>
   );
 }
@@ -19,5 +29,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    resizeMode: 'contain',
   },
 });
