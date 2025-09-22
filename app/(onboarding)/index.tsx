@@ -13,6 +13,7 @@ import { useState } from "react";
 import { TouchableOpacity, useColorScheme, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CountrySelector from "@/components/CountrySelector";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
 export default function RegisterOnboarding() {
     const insets = useSafeAreaInsets();
@@ -57,8 +58,8 @@ export default function RegisterOnboarding() {
             alignItems: 'center'
         }}>
 
-            <CircleContainer radius={80}>
-                <IconSymbol name="globe" color={''}></IconSymbol>
+            <CircleContainer color="#EAEBF3" radius={80}>
+                <FontAwesomeIcon icon={'globe'} size={32} color="#294988" />
             </CircleContainer>
             <GapColumn space={10} />
             <ThemedText style={{

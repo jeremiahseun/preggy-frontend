@@ -13,6 +13,7 @@ import { useState } from "react";
 import RadioButton from "@/components/RadioButton";
 import Checkbox from "@/components/Checkbox";
 import { NormalButton } from "@/components/Buttons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
 export default function DietView() {
     const insets = useSafeAreaInsets();
@@ -65,8 +66,8 @@ export default function DietView() {
                     alignContent: 'center',
                     alignItems: 'center'
                 }}>
-                    <CircleContainer radius={80}>
-                        <IconSymbol name="football.circle" color={''}></IconSymbol>
+                    <CircleContainer color="#EAEBF3" radius={80}>
+                        <FontAwesomeIcon icon={'utensils'} size={32} color="#294988" />
                     </CircleContainer>
                     <GapColumn space={10} />
                     <ThemedText style={{
@@ -156,9 +157,9 @@ export default function DietView() {
                 />
 
                 <GapColumn space={40} />
-                <NormalButton title="Complete Setup & Start using Preggy" navigateTo={"/"} />
+                <NormalButton title="Complete Setup & Start using Preggy" navigateTo={"/(tabs)/home"} />
                 <GapColumn space={30} />
-                <Button title="Skip this - I will do this later"/>
+                <Button title="Skip this - I will do this later" />
                 <GapColumn space={50} />
             </ScrollView>
         </ThemedView>
