@@ -1,6 +1,9 @@
 import { StyleSheet } from 'react-native';
 
 const appStyles = StyleSheet.create({
+    flex: {
+        flex: 1,
+    },
     container: {
         flex: 1,
         gap: 16,

@@ -9,11 +9,13 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
 import appStyles from "@/constants/Styles";
 import { useState } from "react";
-import { StyleSheet, TouchableOpacity, useColorScheme, View, Platform, Modal, Button } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Platform, Modal, Button } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import RadioButton from "@/components/RadioButton";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faBaby } from '@fortawesome/free-solid-svg-icons/faBaby';
 
 export default function TrimesterView() {
     const insets = useSafeAreaInsets();
@@ -114,7 +116,7 @@ export default function TrimesterView() {
             }}>
 
                 <CircleContainer radius={80}>
-                    <IconSymbol name="figure.child" color={''}></IconSymbol>
+                        <FontAwesomeIcon icon={faBaby} size={32} color="brown" />
                 </CircleContainer>
                 <GapColumn space={10} />
                 <ThemedText style={{

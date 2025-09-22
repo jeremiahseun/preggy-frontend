@@ -1,6 +1,6 @@
 import appStyles from '@/constants/Styles';
-import { LinkProps, useRouter } from 'expo-router';
-import { TouchableOpacity, Text } from 'react-native';
+import { ExternalPathString, LinkProps, RelativePathString, useRouter } from 'expo-router';
+import { TouchableOpacity, Text, GestureResponderEvent } from 'react-native';
 import { IconSymbol, IconSymbolName } from './ui/IconSymbol';
 import Row from './Row';
 import { ThemedText } from './ThemedText';
@@ -8,6 +8,7 @@ import { GapRow } from './Gap';
 
 type AuthButtonProps = {
     title: string;
+    onPress?: () => void;
     navigateTo: LinkProps['href']
     style?: object;
     textStyle?: object;
@@ -15,10 +16,10 @@ type AuthButtonProps = {
     type?: 'push' | 'replace' | 'dismissTo';
 };
 
-function NormalButton({ title, navigateTo, style, textStyle, type = 'push' }: AuthButtonProps) {
+function NormalButton({ title, navigateTo, onPress, style, textStyle, type = 'push' }: AuthButtonProps) {
     const router = useRouter();
     return (
-        <TouchableOpacity style={[appStyles.button, style]} onPress={() => type === 'push' ? router.push(navigateTo) : type === 'replace' ? router.replace(navigateTo) : router.dismissTo(navigateTo)}>
+        <TouchableOpacity style={[appStyles.button, style]} onPress={onPress ? () => onPress : () => type === 'push' ? router.push(navigateTo) : type === 'replace' ? router.replace(navigateTo) : router.dismissTo(navigateTo)}>
             <Text style={[appStyles.buttonText, textStyle]}>{title}</Text>
         </TouchableOpacity>
     );
