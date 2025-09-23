@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useState } from "react";
 import RadioButton from "@/components/RadioButton";
 import Checkbox from "@/components/Checkbox";
-import { NormalButton } from "@/components/Buttons";
+import { RouteNormalButton } from "@/components/Buttons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
 export default function DietView() {
@@ -157,7 +157,7 @@ export default function DietView() {
                 />
 
                 <GapColumn space={40} />
-                <NormalButton title="Complete Setup & Start using Preggy" navigateTo={"/(tabs)/home"} />
+                <RouteNormalButton title="Complete Setup & Start using Preggy" navigateTo={"/(tabs)/home"} />
                 <GapColumn space={30} />
                 <Button title="Skip this - I will do this later" />
                 <GapColumn space={50} />

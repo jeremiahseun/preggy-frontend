@@ -1,4 +1,4 @@
-import { NormalButton } from "@/components/Buttons";
+import { RouteNormalButton } from "@/components/Buttons";
 import CircleContainer from "@/components/CircleContainer";
 import Column from "@/components/Column";
 import { GapColumn } from "@/components/Gap";
@@ -87,7 +87,7 @@ export default function RegisterOnboarding() {
             <Ionicons name="arrow-down-outline"></Ionicons>
         </TouchableOpacity>
         <View style={{ flex: 1 }} />
-        <NormalButton title="Continue" navigateTo={"/TrimesterView"} />
+        <RouteNormalButton title="Continue" navigateTo={"/TrimesterView"} />
         <CountrySelector
             visible={modalVisible}
             onClose={() => setModalVisible(false)}

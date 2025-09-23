@@ -7,8 +7,8 @@ import { ThemedText } from '@/components/ThemedText';
 export default function SplashScreen() {
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.replace('/(auth)/onboarding-1');
-    }, 500);
+      router.replace('/(auth)/AuthOnboarding');
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, []);

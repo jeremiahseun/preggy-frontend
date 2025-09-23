@@ -7,11 +7,13 @@ import { useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import ImageView from '@/components/widgets/ImageView';
 import Column from '@/components/Column';
-import { GapColumn } from '@/components/Gap';
+import { GapColumn, GapRow } from '@/components/Gap';
 import CircularCheckbox from '@/components/CircularCheckbox';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import Row from '@/components/Row';
-import { AuthButton, NormalButton } from '@/components/Buttons';
+import { AuthButton, RouteNormalButton } from '@/components/Buttons';
+import CircleContainer from '@/components/CircleContainer';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 const foodOptions = [
     "Yes, this is Jollof Rice with Chicken",
@@ -36,10 +38,16 @@ export default function ConfirmFoodItemScreen() {
                     <ImageView uri={'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'} />
                     <GapColumn space={15} />
                     <View style={[styles.aiDetectionContainer, { backgroundColor: isDarkMode ? '#171a1f' : '#E8F0F7FF' }]}>
-                        <Column>
-                            <ThemedText type='defaultSemiBold'>AI Detection</ThemedText>
-                            <ThemedText type='small12'>95% confidence</ThemedText>
-                        </Column>
+                        <Row>
+                            <CircleContainer color="#EAEBF3" radius={50}>
+                                <FontAwesomeIcon icon={'robot'} size={20} color="#294988" />
+                            </CircleContainer>
+                            <GapRow space={10} />
+                            <Column>
+                                <ThemedText type='defaultSemiBold'>AI Detection</ThemedText>
+                                <ThemedText type='small12'>95% confidence</ThemedText>
+                            </Column>
+                        </Row>
                         <GapColumn space={15} />
                         <ThemedText style={{ textAlign: 'center' }} type='subTitle'>I think this is Jollof Rice with Chicken</ThemedText>
                         <GapColumn space={10} />
@@ -74,7 +82,7 @@ export default function ConfirmFoodItemScreen() {
                             />
                         </Row>
                     </Pressable>
-                    <NormalButton type='replace' title="Continue" navigateTo="/(tabs)/home/food-details" />
+                    <RouteNormalButton type='replace' title="Continue" navigateTo="/(tabs)/home/food-details" />
                     <GapColumn space={40} />
                 </Column>
             </ThemedScrollView>

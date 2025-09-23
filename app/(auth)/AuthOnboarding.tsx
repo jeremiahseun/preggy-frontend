@@ -11,12 +11,13 @@ import {
     Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AuthButton, NormalButton, TextButton } from '@/components/Buttons';
+import { AuthButton, NormalButton, RouteNormalButton, TextButton } from '@/components/Buttons';
 import { GapColumn } from '@/components/Gap';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
+import { useRouter } from 'expo-router';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -75,6 +76,7 @@ export default function AuthOnboarding() {
     const buttonAnim = useRef(new Animated.Value(0)).current;
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
+    const router = useRouter();
 
     // Floating animation for images
     const floatAnim = useRef(new Animated.Value(0)).current;
@@ -430,18 +432,16 @@ export default function AuthOnboarding() {
                                     },
                                 ]}
                             >
-                                <NormalButton
-                                    title={item.buttonText}
-                                    navigateTo={'/(auth)/register'}
-                                    // onPress={() => {
-                                    //     console.log("Pressed")
-                                    //     handleNext();
-                                    // }}
-                                    style={[
-                                        styles.primaryButton,
-                                        { backgroundColor: currentData.primaryColor },
-                                    ]}
-                                />
+                                <NormalButton buttonStyle={[
+                                    styles.primaryButton,
+                                    { backgroundColor: currentData.primaryColor },
+                                ]} buttonText={item.buttonText} onPress={() => {
+                                    if (item.showSkip) {
+                                        handleNext();
+                                    } else {
+                                        router.replace("/(auth)/register");
+                                    }
+                                }} />
 
                                 {item.showSkip && (
                                     <>

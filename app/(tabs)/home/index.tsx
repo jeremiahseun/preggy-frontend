@@ -8,6 +8,7 @@ import Row from '@/components/Row';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedScrollView, ThemedView } from '@/components/ThemedView';
 import appStyles from '@/constants/Styles';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { Link, Redirect, useNavigation, useRouter } from 'expo-router';
 import { FlatList, Image, Platform, Pressable, TextInput, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -98,12 +99,14 @@ export default function HomeScreen() {
             }}>
                 <Link href={'/home/photo-check'} asChild>
                     <BoxContainer style={{
-                        justifyContent: 'center',
+                        paddingTop: 10,
                         alignItems: 'center',
                         flex: 1,
                         paddingHorizontal: 5
                     }}>
-                        <CircleContainer radius={48} color='#F2F7FDFF' />
+                        <CircleContainer color="#EAEBF3" radius={50}>
+                            <FontAwesomeIcon icon={'camera'} size={20} color="#294988" />
+                        </CircleContainer>
                         <GapColumn space={20} />
                         <ThemedText style={{
                             textAlign: 'center'
@@ -116,12 +119,14 @@ export default function HomeScreen() {
                 <GapRow space={20} />
                 <Link href={'/chats'} asChild>
                     <BoxContainer style={{
-                        justifyContent: 'center',
                         alignItems: 'center',
                         flex: 1,
-                        paddingHorizontal: 15
+                        paddingHorizontal: 15,
+                        paddingTop: 10
                     }}>
-                        <CircleContainer radius={48} color='#F2F7FDFF' />
+                        <CircleContainer color="#EAEBF3" radius={50}>
+                            <FontAwesomeIcon icon={'comments'} size={20} color="#294988" />
+                        </CircleContainer>
                         <GapColumn space={20} />
                         <ThemedText style={{
                             textAlign: 'center'

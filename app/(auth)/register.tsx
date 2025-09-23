@@ -1,5 +1,5 @@
 import AuthInput from '@/components/AuthInput';
-import { AuthButton, TextButton } from '@/components/Buttons';
+import { AuthButton, NormalButton, TextButton } from '@/components/Buttons';
 import { GapColumn } from '@/components/Gap';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedScrollView } from '@/components/ThemedView';
@@ -196,19 +196,7 @@ export default function RegisterScreen() {
 
                         <GapColumn space={24} />
 
-                        {/* Register Button with Loading State */}
-                        <View style={styles.registerButtonContainer}>
-                            {isLoading ? (
-                                <View style={[styles.loadingButton, { backgroundColor: Colors.primary }]}>
-                                    <ActivityIndicator color="#FFFFFF" size="small" />
-                                    <ThemedText style={styles.loadingText}>Creating your account...</ThemedText>
-                                </View>
-                            ) : (
-                                <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                                    <ThemedText style={styles.registerButtonText}>Create Account</ThemedText>
-                                </TouchableOpacity>
-                            )}
-                        </View>
+                        <NormalButton isLoading={isLoading} buttonText='Create Account' onPress={handleRegister} />
 
                         <GapColumn space={32} />
 

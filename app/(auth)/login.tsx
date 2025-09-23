@@ -13,12 +13,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
 import AuthInput from '@/components/AuthInput';
-import { AuthButton, TextButton } from '@/components/Buttons';
+import { AuthButton, NormalButton, TextButton } from '@/components/Buttons';
 import { GapColumn } from '@/components/Gap';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedScrollView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import appStyles from '@/constants/Styles';
+import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
     const insets = useSafeAreaInsets();
@@ -27,6 +28,7 @@ export default function LoginScreen() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({ email: '', password: '' });
+    const router = useRouter();
 
     const isDark = colorScheme === 'dark';
 
@@ -55,19 +57,19 @@ export default function LoginScreen() {
     };
 
     const handleLogin = async () => {
-        if (!validateForm()) return;
+        router.dismissTo('/(tabs)/home')
+        // if (!validateForm()) return;
 
-        setIsLoading(true);
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            // Navigate to home on success
-            // navigateTo("/(tabs)/home");
-        } catch (error) {
-            Alert.alert('Error', 'Login failed. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
+        // setIsLoading(true);
+        // try {
+        //     // Simulate API call
+        //     await new Promise(resolve => setTimeout(resolve, 2000));
+        //     // Navigate to home on success
+        //     // navigateTo("/(tabs)/home");
+        // } catch (error) {
+        // } finally {
+        //     setIsLoading(false);
+        // }
     };
 
     const dynamicStyles = StyleSheet.create({
@@ -162,18 +164,7 @@ export default function LoginScreen() {
                         <GapColumn space={24} />
 
                         {/* Login Button with Loading State */}
-                        <View style={styles.loginButtonContainer}>
-                            {isLoading ? (
-                                <View style={[styles.loadingButton, { backgroundColor: Colors.primary }]}>
-                                    <ActivityIndicator color="#FFFFFF" size="small" />
-                                    <ThemedText style={styles.loadingText}>Signing you in...</ThemedText>
-                                </View>
-                            ) : (
-                                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                                    <ThemedText style={styles.loginButtonText}>Sign In</ThemedText>
-                                </TouchableOpacity>
-                            )}
-                        </View>
+                        <NormalButton isLoading={isLoading} buttonText='Sign In' onPress={handleLogin} />
 
                         <GapColumn space={32} />
 

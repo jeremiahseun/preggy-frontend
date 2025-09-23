@@ -1,4 +1,4 @@
-import { NormalButton } from "@/components/Buttons";
+import { RouteNormalButton } from "@/components/Buttons";
 import CircleContainer from "@/components/CircleContainer";
 import Column from "@/components/Column";
 import { GapColumn, GapRow } from "@/components/Gap";
@@ -224,7 +224,7 @@ export default function TrimesterView() {
                 </TouchableOpacity>
                 {renderDatePicker()}
                 <GapColumn space={20} />
-                <NormalButton title="Continue" navigateTo={"/DietView"} />
+                <RouteNormalButton title="Continue" navigateTo={"/DietView"} />
                 <GapColumn space={50} />
             </ScrollView>
         </ThemedView>)
