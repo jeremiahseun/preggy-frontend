@@ -4,11 +4,9 @@ import {
     Text,
     StyleSheet,
     ScrollView,
-    TextInput,
     TouchableOpacity,
     KeyboardAvoidingView,
     Platform,
-    Dimensions,
     StatusBar,
     ActivityIndicator,
 } from 'react-native';
@@ -20,9 +18,9 @@ import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { ThemedText } from '@/components/ThemedText';
 import { GapColumn } from '@/components/Gap';
-
-
-const { width: screenWidth } = Dimensions.get('window');
+import FoodTag from '@/components/FoodTag';
+import { MessageInput, MessageLimitReached } from '@/components/chats/Messaging';
+import TypingIndicator from '@/components/chats/TypingIndicator';
 
 
 interface Message {
@@ -30,23 +28,32 @@ interface Message {
     type: 'user' | 'assistant' | 'welcome';
     content: string;
     timestamp: string;
-    foodItem?: {
-        name: string;
-        status: 'safe' | 'avoid' | 'limit';
-        description: string;
-        reason?: string;
-        alternatives?: string[];
-        guidelines?: string[];
-        benefits?: string[];
-        trimesterNote?: string;
-        lastVerified?: string;
-        sources?: Array<{
-            name: string;
-            description: string;
-            updated: string;
-            verified: boolean;
-        }>;
-    };
+    foodItem?: FoodItem;
+}
+
+type FoodItem = {
+    name: string;
+    status: 'safe' | 'avoid' | 'limit';
+    description: string;
+    reason?: string;
+    alternatives?: string[];
+    guidelines?: string[];
+    benefits?: string[];
+    trimester?: TrimesterInfo;
+    lastVerified?: string;
+    sources?: Array<Sources>;
+}
+
+type TrimesterInfo = {
+    trimesterStage?: "1st" | "2nd" | "3rd" | null;
+    trimesterNote?: string;
+}
+
+type Sources = {
+    name: string;
+    description: string;
+    updated: string;
+    verified: boolean;
 }
 
 const NewConversationBar = () => {
@@ -77,10 +84,10 @@ const ConversationScreen = () => {
     const router = useRouter();
     const scrollViewRef = useRef<ScrollView>(null);
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState<Message[]>([
-    ]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [isLoadingMessages, setLoadingMessages] = useState(true);
     const [isLoadingSendMessage, setLoadingSendMessage] = useState(false);
+    const [isLimitReached, setLimitReached] = useState(false);
 
     const isDark = colorScheme === 'dark';
 
@@ -148,7 +155,10 @@ const ConversationScreen = () => {
                     'Cook it first - Heat in pasta dishes, quiches, or toast it',
                     'Fresh from trusted source - Buy from reputable stores, consume quickly',
                 ],
-                trimesterNote: "Your immune system is slightly stronger now, but still be cautious with cold-smoked fish.",
+                trimester: {
+                    trimesterStage: "1st",
+                    trimesterNote: "Your immune system is slightly stronger now, but still be cautious with cold-smoked fish."
+                },
             },
         },
         {
@@ -165,12 +175,25 @@ const ConversationScreen = () => {
             foodItem: {
                 name: 'Dragon fruit',
                 status: 'safe',
+                lastVerified: 'Jan 2024',
                 description: 'Nutritious tropical fruit, safe when washed',
                 benefits: [
-                    'High in folate for baby\'s development',
+                    "High in folate for baby's development",
                     'Natural fiber aids digestion',
                 ],
             },
+        },
+        {
+            id: '8',
+            type: 'user',
+            content: "How do you get all these information?",
+            timestamp: '3:12 PM',
+        },
+        {
+            id: '9',
+            type: 'assistant',
+            content: "I have a knowledge base that feeds me with all the information that I am giving you. And the best part? They are verified.",
+            timestamp: '3:14 PM',
         },
     ];
 
@@ -180,6 +203,11 @@ const ConversationScreen = () => {
         const timer = setTimeout(() => {
             setMessages(prev => [...prev, ...sampleMessages]);
             setLoadingMessages(false); // Set to false after messages are loaded
+
+            // Scroll to bottom after loading
+            setTimeout(() => {
+                scrollViewRef.current?.scrollToEnd({ animated: true });
+            }, 100);
         }, 2000);
         return () => clearTimeout(timer);
     }, []);
@@ -198,34 +226,39 @@ const ConversationScreen = () => {
             };
             setMessages(prev => [...prev, newMessage]);
             setMessage('');
+            setLoadingSendMessage(true);
+            setLimitReached(true)
 
             // Scroll to bottom after sending
             setTimeout(() => {
                 scrollViewRef.current?.scrollToEnd({ animated: true });
             }, 100);
+
+            // Simulate assistant response
+            setTimeout(() => {
+                const assistantResponse: Message = {
+                    id: Date.now().toString(),
+                    type: 'assistant',
+                    content: "This is a simulated response.",
+                    timestamp: new Date().toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true,
+                    }),
+                };
+                setMessages(prev => [...prev, assistantResponse]);
+                setLoadingSendMessage(false);
+                setTimeout(() => {
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 100);
+            }, 2000);
         }
     };
 
-    const renderStatusBadge = (status: string) => {
-        const badgeStyles = {
-            safe: { bg: '#10B981', text: '✓ SAFE' },
-            avoid: { bg: '#EF4444', text: '🚫 AVOID' },
-            limit: { bg: '#F59E0B', text: '⚠ LIMIT' },
-        };
-
-        const style = badgeStyles[status as keyof typeof badgeStyles];
-
-        return (
-            <View style={[styles.statusBadge, { backgroundColor: style.bg }]}>
-                <Text style={styles.statusBadgeText}>{style.text}</Text>
-            </View>
-        );
-    };
-
-    const renderFoodCard = (foodItem: any) => (
+    const renderFoodCard = (foodItem: FoodItem) => (
         <View style={[styles.foodCard, { backgroundColor: isDark ? '#2A2A2A' : '#F8F9FA' }]}>
             <View style={styles.foodHeader}>
-                {renderStatusBadge(foodItem.status)}
+                <FoodTag type={foodItem.status} />
                 <Text style={[styles.foodName, { color: isDark ? '#FFFFFF' : '#1F2937' }]}>
                     {foodItem.name}
                 </Text>
@@ -303,15 +336,15 @@ const ConversationScreen = () => {
                 </View>
             )}
 
-            {foodItem.trimesterNote && (
+            {foodItem.trimester && (
                 <View style={[styles.trimesterNote, { backgroundColor: isDark ? '#1E3A8A' : '#EFF6FF' }]}>
                     <Ionicons name="calendar-outline" size={16} color="#3B82F6" />
                     <View style={styles.trimesterContent}>
                         <Text style={[styles.trimesterTitle, { color: isDark ? '#93C5FD' : '#3B82F6' }]}>
-                            2nd Trimester Note
+                            {foodItem.trimester ? `${foodItem.trimester.trimesterStage} Trimester Note` : "No Trimester Info"}
                         </Text>
                         <Text style={[styles.trimesterText, { color: isDark ? '#DBEAFE' : '#1E40AF' }]}>
-                            {foodItem.trimesterNote}
+                            {foodItem.trimester ? `${foodItem.trimester.trimesterNote}` : "No Trimester Info"}
                         </Text>
                     </View>
                 </View>
@@ -373,12 +406,6 @@ const ConversationScreen = () => {
                             </View>
                         </View>
                     ))}
-
-                    <View style={styles.sourcesFooter}>
-                        <Text style={[styles.sourcesFooterText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                            All sources verified within last 3 months
-                        </Text>
-                    </View>
                 </View>
             )}
         </View>
@@ -434,15 +461,6 @@ const ConversationScreen = () => {
         header: {
             backgroundColor: isDark ? '#1F1F1F' : '#FFFFFF',
             borderBottomColor: isDark ? '#333333' : '#E5E7EB',
-        },
-        inputContainer: {
-            backgroundColor: isDark ? '#1F1F1F' : '#FFFFFF',
-            borderTopColor: isDark ? '#333333' : '#E5E7EB',
-        },
-        textInput: {
-            backgroundColor: isDark ? '#2A2A2A' : '#F9FAFB',
-            color: isDark ? '#FFFFFF' : '#1F2937',
-            borderColor: isDark ? '#374151' : '#D1D5DB',
         },
     });
 
@@ -501,32 +519,16 @@ const ConversationScreen = () => {
                             showsVerticalScrollIndicator={false}
                         >
                             {messages.map(renderMessage)}
+                            {isLoadingSendMessage && <TypingIndicator />}
                         </ScrollView>
                     )
                 }
 
-                {/* Message Input */}
-                <View style={[styles.inputContainer, dynamicStyles.inputContainer, {
-                    paddingBottom: insets.bottom
-                }]}>
-                    <TouchableOpacity style={styles.cameraButton}>
-                        <Ionicons name="camera-outline" size={24} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                    </TouchableOpacity>
+                {/* Message Input && Message Limit Reached */}
+                {
+                    isLimitReached ? <MessageLimitReached /> : <MessageInput message={message} sendMessage={sendMessage} setMessage={setMessage} />
+                }
 
-                    <TextInput
-                        style={[styles.textInput, dynamicStyles.textInput]}
-                        value={message}
-                        onChangeText={setMessage}
-                        placeholder="Ask about any food safety concern..."
-                        placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
-                        multiline
-                        maxLength={500}
-                    />
-
-                    <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-                        <Ionicons name="send" size={20} color="#FFFFFF" />
-                    </TouchableOpacity>
-                </View>
             </KeyboardAvoidingView>
         </ThemedView>
     );
@@ -655,18 +657,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 8,
+        gap: 10,
         flexWrap: 'wrap',
-    },
-    statusBadge: {
-        borderRadius: 16,
-        paddingHorizontal: 12,
-        paddingVertical: 4,
-        marginRight: 12,
-    },
-    statusBadgeText: {
-        color: '#FFFFFF',
-        fontSize: 12,
-        fontWeight: '600',
     },
     foodName: {
         fontSize: 16,
@@ -678,7 +670,7 @@ const styles = StyleSheet.create({
     },
     guidelinesText: {
         color: '#3B82F6',
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '500',
     },
     foodDescription: {
@@ -866,36 +858,7 @@ const styles = StyleSheet.create({
         fontSize: 11,
         textAlign: 'center',
     },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderTopWidth: 1,
-    },
-    cameraButton: {
-        marginRight: 12,
-        marginBottom: 8,
-    },
-    textInput: {
-        flex: 1,
-        borderWidth: 1,
-        borderRadius: 20,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        maxHeight: 100,
-        marginRight: 12,
-        fontSize: 16,
-    },
-    sendButton: {
-        backgroundColor: '#3B82F6',
-        borderRadius: 20,
-        width: 40,
-        height: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 4,
-    },
+
     pagination: {
         flexDirection: 'row',
         alignItems: 'center',
