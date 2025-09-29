@@ -12,20 +12,29 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useState } from "react";
 import RadioButton from "@/components/RadioButton";
 import Checkbox from "@/components/Checkbox";
-import { RouteNormalButton } from "@/components/Buttons";
+import { NormalButton, RouteNormalButton, TextButton } from "@/components/Buttons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useRouter } from "expo-router";
+import { useProfileState } from "@/providers/profile_provider";
 
 export default function DietView() {
+    const { trimesterStage, everydayMeal, anythingElse, foodsToAvoid, country, dueDate, isLoading, setEverydayMeal, setAnythingElse, setFoodsToAvoid, setLoading, } = useProfileState();
     const insets = useSafeAreaInsets();
     const isDarkMode = useColorScheme() === 'dark';
     const [diet, setDiet] = useState<string | null>(null);
     const [avoidances, setAvoidances] = useState<string[]>([]);
     const [otherAvoidances, setOtherAvoidances] = useState("");
+    const router = useRouter();
+
 
     const toggleAvoidance = (item: string) => {
         setAvoidances(prev =>
             prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]
         );
+        const newFoodsToAvoid = foodsToAvoid.includes(item)
+            ? foodsToAvoid.filter(i => i !== item)
+            : [...foodsToAvoid, item];
+        setFoodsToAvoid(newFoodsToAvoid);
     };
 
     return (
@@ -157,9 +166,14 @@ export default function DietView() {
                 />
 
                 <GapColumn space={40} />
-                <RouteNormalButton title="Complete Setup & Start using Preggy" navigateTo={"/(tabs)/home"} />
+                <NormalButton buttonText="Complete Setup & Start using Preggy" onPress={() => {
+
+                    router.push("/(tabs)/home");
+                }} />
                 <GapColumn space={30} />
-                <Button title="Skip this - I will do this later" />
+                <TextButton style={{
+                    alignSelf: 'center'
+                }} navigateTo={"/(tabs)/home"} title="Skip this - I will do this later" />
                 <GapColumn space={50} />
             </ScrollView>
         </ThemedView>

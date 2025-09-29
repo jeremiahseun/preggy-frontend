@@ -1,4 +1,4 @@
-import { RouteNormalButton } from "@/components/Buttons";
+import { NormalButton, RouteNormalButton } from "@/components/Buttons";
 import CircleContainer from "@/components/CircleContainer";
 import Column from "@/components/Column";
 import { GapColumn, GapRow } from "@/components/Gap";
@@ -9,12 +9,14 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
 import appStyles from "@/constants/Styles";
 import { useState } from "react";
-import { StyleSheet, TouchableOpacity, View, Platform, Modal, Button } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Platform, Modal, Button, Alert } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import RadioButton from "@/components/RadioButton";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useProfileState } from "@/providers/profile_provider";
+import { useRouter } from "expo-router";
 
 export default function TrimesterView() {
     const insets = useSafeAreaInsets();
@@ -25,6 +27,11 @@ export default function TrimesterView() {
     const futureDate = new Date(currentDate);
     futureDate.setFullYear(futureDate.getFullYear() + 1);
 
+    const { trimesterStage, setTrimesterStage, setDueDate, dueDate} = useProfileState();
+    const router = useRouter();
+
+
+
 
     const onDateChange = (event: any, selectedDate?: Date) => {
         const currentDate = selectedDate || date;
@@ -32,6 +39,7 @@ export default function TrimesterView() {
             setShowDatePicker(false);
         }
         setDate(currentDate);
+        setDueDate(currentDate);
     };
 
     const renderDatePicker = () => {
@@ -148,7 +156,11 @@ export default function TrimesterView() {
                             <GapColumn space={5} />
                             <ThemedText type="small12">Early development stage</ThemedText>
                         </Column>
-                        <RadioButton selected={selectedTrimester === "first"} onPress={() => setSelectedTrimester("first")} />
+                        <RadioButton selected={selectedTrimester === "first"} onPress={() => {
+                            setTrimesterStage(1);
+                            setSelectedTrimester("first");
+                        }}
+                            />
                     </Row>
                 </TouchableOpacity>
                 <GapColumn space={20} />
@@ -171,7 +183,10 @@ export default function TrimesterView() {
                             <GapColumn space={5} />
                             <ThemedText type="small12">Growth & development</ThemedText>
                         </Column>
-                        <RadioButton selected={selectedTrimester === "second"} onPress={() => setSelectedTrimester("second")} />
+                        <RadioButton selected={selectedTrimester === "second"} onPress={() => {
+                            setTrimesterStage(2);
+                            setSelectedTrimester("second");
+                        }} />
                     </Row>
                 </TouchableOpacity>
                 <GapColumn space={20} />
@@ -194,7 +209,10 @@ export default function TrimesterView() {
                             <GapColumn space={5} />
                             <ThemedText type="small12">Final preparation</ThemedText>
                         </Column>
-                        <RadioButton selected={selectedTrimester === "third"} onPress={() => setSelectedTrimester("third")} />
+                        <RadioButton selected={selectedTrimester === "third"} onPress={() => {
+                            setTrimesterStage(3);
+                            setSelectedTrimester("third");
+                        }} />
                     </Row>
                 </TouchableOpacity>
                 <GapColumn space={20} />
@@ -224,7 +242,13 @@ export default function TrimesterView() {
                 </TouchableOpacity>
                 {renderDatePicker()}
                 <GapColumn space={20} />
-                <RouteNormalButton title="Continue" navigateTo={"/DietView"} />
+                <NormalButton buttonText="Continue" onPress={() => {
+                    if ((trimesterStage === null || selectedTrimester === '') || dueDate === null) {
+                        Alert.alert("Trimester Stage", "Please choose your trimester stage or type your due date if you know it.");
+                        return;
+                    }
+                    router.push("/DietView");
+                }} />
                 <GapColumn space={50} />
             </ScrollView>
         </ThemedView>)

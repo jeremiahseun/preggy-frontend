@@ -5,8 +5,10 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedScrollView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import appStyles from '@/constants/Styles';
+import { useAuthStore } from '@/providers/auth_provider';
+import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Image, KeyboardAvoidingView, Platform, useColorScheme, View, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, useColorScheme, View, StyleSheet } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -19,7 +21,8 @@ export default function RegisterScreen() {
         password: '',
         confirmPassword: '',
     });
-    const [isLoading, setIsLoading] = useState(false);
+
+    const { isLoading, register, error } = useAuthStore();
     const [errors, setErrors] = useState({
         fullName: '',
         email: '',
@@ -54,8 +57,8 @@ export default function RegisterScreen() {
         if (!formData.password.trim()) {
             newErrors.password = 'Password is required';
             isValid = false;
-        } else if (formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
+        } else if (formData.password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters';
             isValid = false;
         }
 
@@ -69,18 +72,21 @@ export default function RegisterScreen() {
     };
 
     const handleRegister = async () => {
+
         if (!validateForm()) return;
 
-        setIsLoading(true);
+        await register(formData);
+
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2500));
-            // Navigate to onboarding on success
-            // navigateTo("/(onboarding)");
+            if (error) {
+                Alert.alert('Error', error);
+                return;
+            }
+            router.push("/(onboarding)");
+
         } catch (error) {
+            console.log(error);
             Alert.alert('Error', 'Registration failed. Please try again.');
-        } finally {
-            setIsLoading(false);
         }
     };
 

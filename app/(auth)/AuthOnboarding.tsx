@@ -11,13 +11,14 @@ import {
     Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AuthButton, NormalButton, RouteNormalButton, TextButton } from '@/components/Buttons';
+import {  NormalButton, TextButton } from '@/components/Buttons';
 import { GapColumn } from '@/components/Gap';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useAuthStore } from '@/providers/auth_provider';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -77,6 +78,7 @@ export default function AuthOnboarding() {
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
     const router = useRouter();
+    const { setIsFirstTime } = useAuthStore();
 
     // Floating animation for images
     const floatAnim = useRef(new Animated.Value(0)).current;
@@ -439,6 +441,7 @@ export default function AuthOnboarding() {
                                     if (item.showSkip) {
                                         handleNext();
                                     } else {
+                                        setIsFirstTime(false);
                                         router.replace("/(auth)/register");
                                     }
                                 }} />
@@ -448,6 +451,7 @@ export default function AuthOnboarding() {
                                         <GapColumn space={16} />
                                         <TextButton
                                             title="Skip"
+                                            onPress={() => setIsFirstTime(false)}
                                             navigateTo="/(auth)/register"
                                             textColor={isDark ? '#999' : Colors.primary}
                                             style={styles.skipButton}

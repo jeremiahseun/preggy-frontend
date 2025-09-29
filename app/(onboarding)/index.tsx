@@ -1,4 +1,4 @@
-import { RouteNormalButton } from "@/components/Buttons";
+import { NormalButton, RouteNormalButton } from "@/components/Buttons";
 import CircleContainer from "@/components/CircleContainer";
 import Column from "@/components/Column";
 import { GapColumn } from "@/components/Gap";
@@ -10,17 +10,24 @@ import { Colors } from "@/constants/Colors";
 import appStyles from "@/constants/Styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
-import { TouchableOpacity, useColorScheme, View } from "react-native";
+import { Alert, TouchableOpacity, useColorScheme, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CountrySelector from "@/components/CountrySelector";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useRouter } from "expo-router";
+import { useProfileState } from "@/providers/profile_provider";
 
 export default function RegisterOnboarding() {
     const insets = useSafeAreaInsets();
     const isDarkMode = useColorScheme() === 'dark'
+    const router = useRouter();
+    const { country, setCountry } = useProfileState();
 
     const [modalVisible, setModalVisible] = useState(false);
-    const [country, setCountry] = useState<{ name: string, code: string } | null>(null);
+
+    /**
+     * navigateTo={"/TrimesterView"}
+     */
 
     return (<ThemedView style={[appStyles.screen, {
         paddingTop: insets.top + 30, paddingBottom: insets.bottom,
@@ -83,16 +90,22 @@ export default function RegisterOnboarding() {
             paddingHorizontal: 10,
             borderWidth: .5
         }, appStyles.row]}>
-            <ThemedText type={country ? 'defaultSemiBold' : 'default'} style={{ flex: 1 }}>{country ? country.name : 'Select your country'}</ThemedText>
+            <ThemedText type={country ? 'defaultSemiBold' : 'default'} style={{ flex: 1 }}>{country ? country : 'Select your country'}</ThemedText>
             <Ionicons name="arrow-down-outline"></Ionicons>
         </TouchableOpacity>
         <View style={{ flex: 1 }} />
-        <RouteNormalButton title="Continue" navigateTo={"/TrimesterView"} />
+        <NormalButton buttonText="Continue" onPress={() => {
+            if (country === '') {
+                Alert.alert("Select location", "Please select your country");
+                return;
+            }
+            router.push("/TrimesterView");
+        }} />
         <CountrySelector
             visible={modalVisible}
             onClose={() => setModalVisible(false)}
             onSelect={(selectedCountry) => {
-                setCountry(selectedCountry);
+                setCountry(selectedCountry.name);
                 setModalVisible(false);
             }}
         />

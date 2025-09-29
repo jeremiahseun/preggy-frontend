@@ -1,6 +1,6 @@
 import appStyles from '@/constants/Styles';
 import { ExternalPathString, LinkProps, RelativePathString, useRouter } from 'expo-router';
-import { TouchableOpacity, Text, GestureResponderEvent, View, ColorValue, ActivityIndicator, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { TouchableOpacity, Text, GestureResponderEvent, View, ColorValue, ActivityIndicator, StyleSheet, StyleProp, ViewStyle, useColorScheme } from 'react-native';
 import { IconSymbol, IconSymbolName } from './ui/IconSymbol';
 import Row from './Row';
 import { ThemedText } from './ThemedText';
@@ -35,12 +35,19 @@ function AuthButton({ title, navigateTo, style, textStyle }: AuthButtonProps) {
     );
 }
 
-function TextButton({ title, navigateTo, textColor, style, type = 'push' }: AuthButtonProps) {
+function TextButton({ title, navigateTo, onPress, textColor, style, type = 'push' }: AuthButtonProps) {
     const router = useRouter();
+    const isDarkMode = useColorScheme() === 'dark';
 
     return (
-        <TouchableOpacity onPress={() => type === 'push' ? router.push(navigateTo) : type === 'replace' ? router.replace(navigateTo) : router.dismissTo(navigateTo)}>
-            <Text style={[appStyles.buttonText, { color: textColor ?? "#000" }, style]}>{title}</Text>
+        <TouchableOpacity onPress={() => {
+            if (onPress) {
+                console.log("onPress called")
+                onPress();
+            }
+            type === 'push' ? router.push(navigateTo) : type === 'replace' ? router.replace(navigateTo) : router.dismissTo(navigateTo)
+        }}>
+            <Text style={[appStyles.buttonText, { color: textColor ?? (isDarkMode ? "grey" : "000") }, style]}>{title}</Text>
         </TouchableOpacity>
     );
 }
