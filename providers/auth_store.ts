@@ -68,6 +68,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             console.log(`Initializing auth...: ${JSON.stringify(session)}`);
             set({ session, user: session?.user ?? null, isAuthenticated: !!session, isLoading: false });
+            set({ token: session?.access_token ?? null });
+            StorageService.saveData(session?.access_token, tokenValue);
         });
 
         // Return the unsubscribe function for cleanup

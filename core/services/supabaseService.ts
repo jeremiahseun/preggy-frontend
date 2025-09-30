@@ -2,6 +2,7 @@ import 'react-native-url-polyfill/auto'; // Required for Supabase to work in Rea
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import { AppState } from 'react-native';
+import { Profile, UpdateProfileParams } from '@/src/interfaces/profile';
 
 // --- INITIALIZATION ---
 // You should store these in an environment file (e.g., .env)
@@ -74,4 +75,53 @@ export async function forgotPassword(email: string) {
         redirectTo: 'yourapp://reset-password',
     });
     return { data, error };
+}
+
+
+// --- PROFILE FUNCTIONS ---
+
+/**
+ * Fetches the profile for the currently logged-in user.
+ */
+export async function getProfile() {
+    // First, get the current user session
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("No authenticated user found.");
+
+    // Then, fetch the profile corresponding to the user's ID
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single(); // .single() returns one object instead of an array
+
+    if (error && error.code !== 'PGRST116') { // PGRST116: "exact one row not found" is okay on first login
+        console.error('Error fetching profile:', error);
+        throw error;
+    }
+
+    return data as Profile | null;
+}
+
+/**
+ * Updates the profile for the currently logged-in user.
+ * @param profileData The profile fields to update.
+ */
+export async function updateProfile(profileData: UpdateProfileParams) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("No authenticated user found.");
+
+    const { data, error } = await supabase
+        .from('profiles')
+        .update(profileData)
+        .eq('id', user.id)
+        .select() // .select() returns the updated data
+        .single();
+
+    if (error) {
+        console.error('Error updating profile:', error);
+        throw error;
+    }
+
+    return data as Profile;
 }

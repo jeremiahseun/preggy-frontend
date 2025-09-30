@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedScrollView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import appStyles from '@/constants/Styles';
-import { useAuthStore } from '@/providers/auth_provider';
+import { useAuthStore } from '@/providers/auth_store';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Image, KeyboardAvoidingView, Platform, useColorScheme, View, StyleSheet } from 'react-native';

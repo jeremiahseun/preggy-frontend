@@ -7,7 +7,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
 import appStyles from "@/constants/Styles";
-import { ScrollView, useColorScheme, View, TextInput, StyleSheet, TouchableOpacity, Button } from "react-native";
+import { ScrollView, useColorScheme, View, TextInput, StyleSheet, TouchableOpacity, Button, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useState } from "react";
 import RadioButton from "@/components/RadioButton";
@@ -15,26 +15,24 @@ import Checkbox from "@/components/Checkbox";
 import { NormalButton, RouteNormalButton, TextButton } from "@/components/Buttons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useRouter } from "expo-router";
-import { useProfileState } from "@/providers/profile_provider";
+import { useProfileStore } from "@/providers/profile_store";
 
 export default function DietView() {
-    const { trimesterStage, everydayMeal, anythingElse, foodsToAvoid, country, dueDate, isLoading, setEverydayMeal, setAnythingElse, setFoodsToAvoid, setLoading, } = useProfileState();
     const insets = useSafeAreaInsets();
     const isDarkMode = useColorScheme() === 'dark';
-    const [diet, setDiet] = useState<string | null>(null);
+    const [diet, setDiet] = useState<'all' | 'pescatarian' | 'vegetarian' | null>(null);
     const [avoidances, setAvoidances] = useState<string[]>([]);
     const [otherAvoidances, setOtherAvoidances] = useState("");
     const router = useRouter();
+    const { isLoading, error, updateProfile } = useProfileStore();
+
+
 
 
     const toggleAvoidance = (item: string) => {
         setAvoidances(prev =>
             prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]
         );
-        const newFoodsToAvoid = foodsToAvoid.includes(item)
-            ? foodsToAvoid.filter(i => i !== item)
-            : [...foodsToAvoid, item];
-        setFoodsToAvoid(newFoodsToAvoid);
     };
 
     return (
@@ -95,13 +93,13 @@ export default function DietView() {
                 <ThemedText>Which of these best describes your eating style?</ThemedText>
                 <GapColumn space={20} />
 
-                <TouchableOpacity style={styles.optionContainer} onPress={() => setDiet('everything')}>
-                    <RadioButton selected={diet === 'everything'} onPress={() => setDiet('everything')} />
+                <TouchableOpacity style={styles.optionContainer} onPress={() => setDiet('all')}>
+                    <RadioButton selected={diet === 'all'} onPress={() => setDiet('all')} />
                     <GapRow space={10} />
                     <ThemedText style={{ flex: 1 }}>I eat everything (meat, fish, vegetables, etc.)</ThemedText>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.optionContainer} onPress={() => setDiet('plant-based')}>
-                    <RadioButton selected={diet === 'plant-based'} onPress={() => setDiet('plant-based')} />
+                <TouchableOpacity style={styles.optionContainer} onPress={() => setDiet('vegetarian')}>
+                    <RadioButton selected={diet === 'vegetarian'} onPress={() => setDiet('vegetarian')} />
                     <GapRow space={10} />
                     <ThemedText style={{ flex: 1 }}>My meals are mainly staples (Yam, Garri, Rice, Beans, vegetable soups etc), with a little meat or fish sometimes.</ThemedText>
                 </TouchableOpacity>
@@ -110,12 +108,6 @@ export default function DietView() {
                     <GapRow space={10} />
                     <ThemedText style={{ flex: 1 }}>I eat fish, but I don't eat other meat.</ThemedText>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.optionContainer} onPress={() => setDiet('vegetarian')}>
-                    <RadioButton selected={diet === 'vegetarian'} onPress={() => setDiet('vegetarian')} />
-                    <GapRow space={10} />
-                    <ThemedText style={{ flex: 1 }}>I don't eat any meat or fish.</ThemedText>
-                </TouchableOpacity>
-
                 <GapColumn space={40} />
 
                 <ThemedText type="subTitle">Foods You Avoid</ThemedText>
@@ -166,9 +158,13 @@ export default function DietView() {
                 />
 
                 <GapColumn space={40} />
-                <NormalButton buttonText="Complete Setup & Start using Preggy" onPress={() => {
-
-                    router.push("/(tabs)/home");
+                <NormalButton isLoading={isLoading} buttonText="Complete Setup & Start using Preggy" onPress={async () => {
+                    await updateProfile({ everyday_meals: diet, foods_to_avoid: avoidances, anything_else: otherAvoidances });
+                    if (error) {
+                        Alert.alert('Error Updating Profile', error);
+                        return;
+                    }
+                    router.dismissTo("/(tabs)/home");
                 }} />
                 <GapColumn space={30} />
                 <TextButton style={{

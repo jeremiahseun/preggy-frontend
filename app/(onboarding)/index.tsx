@@ -15,19 +15,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CountrySelector from "@/components/CountrySelector";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useRouter } from "expo-router";
-import { useProfileState } from "@/providers/profile_provider";
+import { useProfileStore } from "@/providers/profile_store";
 
 export default function RegisterOnboarding() {
     const insets = useSafeAreaInsets();
     const isDarkMode = useColorScheme() === 'dark'
     const router = useRouter();
-    const { country, setCountry } = useProfileState();
+    const { isLoading, error, updateProfile } = useProfileStore();
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [country, setCountry] = useState('');
 
-    /**
-     * navigateTo={"/TrimesterView"}
-     */
 
     return (<ThemedView style={[appStyles.screen, {
         paddingTop: insets.top + 30, paddingBottom: insets.bottom,
@@ -94,9 +92,14 @@ export default function RegisterOnboarding() {
             <Ionicons name="arrow-down-outline"></Ionicons>
         </TouchableOpacity>
         <View style={{ flex: 1 }} />
-        <NormalButton buttonText="Continue" onPress={() => {
+        <NormalButton isLoading={isLoading} buttonText="Continue" onPress={async () => {
             if (country === '') {
                 Alert.alert("Select location", "Please select your country");
+                return;
+            }
+            await updateProfile({ country, region: country });
+            if (error) {
+                Alert.alert('Error Updating Profile', error);
                 return;
             }
             router.push("/TrimesterView");

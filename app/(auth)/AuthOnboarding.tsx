@@ -11,14 +11,14 @@ import {
     Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {  NormalButton, TextButton } from '@/components/Buttons';
+import { NormalButton, TextButton } from '@/components/Buttons';
 import { GapColumn } from '@/components/Gap';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '@/providers/auth_provider';
+import { useAuthStore } from '@/providers/auth_store';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
