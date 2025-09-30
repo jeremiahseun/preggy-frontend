@@ -13,63 +13,70 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
 import AuthInput from '@/components/AuthInput';
-import { AuthButton, NormalButton, TextButton } from '@/components/Buttons';
+import { NormalButton, TextButton } from '@/components/Buttons';
 import { GapColumn } from '@/components/Gap';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedScrollView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import appStyles from '@/constants/Styles';
 import { useRouter } from 'expo-router';
+import { useAuthStore } from '@/providers/auth_store';
 
 export default function LoginScreen() {
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [errors, setErrors] = useState({ email: '', password: '' });
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
     const router = useRouter();
+
+    const { isLoading, login, error } = useAuthStore();
 
     const isDark = colorScheme === 'dark';
 
     const validateForm = () => {
-        const newErrors = { email: '', password: '' };
         let isValid = true;
 
-        if (!email.trim()) {
-            newErrors.email = 'Email is required';
+        if (!formData.email.trim()) {
+            Alert.alert('Error', 'Email is required');
             isValid = false;
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
-            newErrors.email = 'Please enter a valid email';
+
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            Alert.alert('Error', 'Please enter a valid email');
             isValid = false;
         }
 
-        if (!password.trim()) {
-            newErrors.password = 'Password is required';
+        if (!formData.password.trim()) {
+            Alert.alert('Error', 'Password is required');
             isValid = false;
-        } else if (password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
+        } else if (formData.password.length < 6) {
+            Alert.alert('Error', 'Password must be at least 6 characters long');
             isValid = false;
         }
 
-        setErrors(newErrors);
         return isValid;
     };
 
     const handleLogin = async () => {
-        router.dismissTo('/(tabs)/home')
-        // if (!validateForm()) return;
 
-        // setIsLoading(true);
-        // try {
-        //     // Simulate API call
-        //     await new Promise(resolve => setTimeout(resolve, 2000));
-        //     // Navigate to home on success
-        //     // navigateTo("/(tabs)/home");
-        // } catch (error) {
-        // } finally {
-        //     setIsLoading(false);
-        // }
+        if (!validateForm()) return;
+
+        try {
+            await login(formData);
+            if (error) {
+                Alert.alert('Error', error);
+                return;
+            }
+            router.dismissTo('/(tabs)/home')
+        } catch (error : any) {
+            Alert.alert('Error', error);
+            return;
+        }
+    };
+
+    const updateFormData = (field: string, value: string) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
     };
 
     const dynamicStyles = StyleSheet.create({
@@ -133,12 +140,11 @@ export default function LoginScreen() {
                         <AuthInput
                             label="Email Address"
                             placeholder="Enter your email"
-                            value={email}
-                            onChangeText={setEmail}
+                            value={formData.email}
+                            onChangeText={(value) => updateFormData('email', value)}
                             secureTextEntry={false}
                             keyboardType="email-address"
                             autoCapitalize="none"
-                        // error={errors.email}
                         />
 
                         <GapColumn space={16} />
@@ -146,10 +152,9 @@ export default function LoginScreen() {
                         <AuthInput
                             label="Password"
                             placeholder="Enter your password"
-                            value={password}
-                            onChangeText={setPassword}
+                            value={formData.password}
+                            onChangeText={(value) => updateFormData('password', value)}
                             secureTextEntry
-                        // error={errors.password}
                         />
 
                         <View style={styles.forgotPasswordContainer}>
@@ -253,23 +258,6 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 6,
     },
-    signupCard: {
-        borderRadius: 20,
-        padding: 28,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 6,
-    },
-    resetCard: {
-        borderRadius: 20,
-        padding: 32,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 6,
-        alignItems: 'center',
-    },
 
     // Title Styles
     welcomeTitle: {
@@ -284,20 +272,6 @@ const styles = StyleSheet.create({
         opacity: 0.8,
         lineHeight: 22,
     },
-    signupTitle: {
-        fontSize: 26,
-        fontWeight: '700',
-        textAlign: 'center',
-        marginBottom: 8,
-    },
-    signupSubtitle: {
-        fontSize: 16,
-        textAlign: 'center',
-        opacity: 0.8,
-        lineHeight: 22,
-        maxWidth: 280,
-        alignSelf: 'center',
-    },
 
     // Form Styles
     formContainer: {
@@ -311,10 +285,6 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
     },
 
-    // Button Styles
-    loginButtonContainer: {
-        width: '100%',
-    },
     loginButton: {
         backgroundColor: Colors.primary,
         borderRadius: 16,
@@ -325,69 +295,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.15,
         shadowRadius: 12,
         elevation: 8,
-    },
-    loginButtonText: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: '600',
-    },
-    registerButtonContainer: {
-        width: '100%',
-    },
-    registerButton: {
-        backgroundColor: Colors.primary,
-        borderRadius: 16,
-        paddingVertical: 18,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
-    },
-    registerButtonText: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: '600',
-    },
-    resetButtonContainer: {
-        width: '100%',
-    },
-    resetButton: {
-        backgroundColor: Colors.primary,
-        borderRadius: 16,
-        paddingVertical: 18,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
-    },
-    resetButtonText: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: '600',
-    },
-
-    // Loading Button Styles
-    loadingButton: {
-        borderRadius: 16,
-        paddingVertical: 18,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
-    },
-    loadingText: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: '600',
-        marginLeft: 12,
     },
 
     // Divider Styles
@@ -418,73 +325,5 @@ const styles = StyleSheet.create({
     },
     signupButton: {
         marginLeft: 4,
-    },
-    loginLinkContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loginLinkText: {
-        fontSize: 16,
-        opacity: 0.8,
-    },
-    loginLinkButton: {
-        marginLeft: 4,
-    },
-    backButton: {
-        alignSelf: 'center',
-    },
-
-    // Forgot Password Success Styles
-    iconContainer: {
-        marginBottom: 24,
-    },
-    icon: {
-        fontSize: 64,
-    },
-    successIconContainer: {
-        marginBottom: 24,
-    },
-    successIcon: {
-        fontSize: 64,
-    },
-    resetTitle: {
-        fontSize: 28,
-        fontWeight: '700',
-        textAlign: 'center',
-        marginBottom: 16,
-    },
-    resetSubtitle: {
-        fontSize: 16,
-        textAlign: 'center',
-        opacity: 0.8,
-        lineHeight: 22,
-        maxWidth: 300,
-    },
-    successTitle: {
-        fontSize: 28,
-        fontWeight: '700',
-        textAlign: 'center',
-        marginBottom: 16,
-    },
-    successMessage: {
-        fontSize: 16,
-        textAlign: 'center',
-        opacity: 0.8,
-        marginBottom: 8,
-    },
-    emailText: {
-        fontSize: 16,
-        fontWeight: '600',
-        textAlign: 'center',
-        color: Colors.primary,
-        marginBottom: 16,
-    },
-    instructionText: {
-        fontSize: 14,
-        textAlign: 'center',
-        opacity: 0.7,
-        lineHeight: 20,
-        maxWidth: 300,
     },
 });
