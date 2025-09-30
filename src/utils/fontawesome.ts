@@ -5,10 +5,26 @@ import { faPersonPregnant } from '@fortawesome/free-solid-svg-icons/faPersonPreg
 import { faSeedling } from '@fortawesome/free-solid-svg-icons/faSeedling'
 import { faHeart } from '@fortawesome/free-solid-svg-icons/faHeart'
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays'
+import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb'
+import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch'
+import { faBook } from '@fortawesome/free-solid-svg-icons/faBook'
 import { faGlobe } from '@fortawesome/free-solid-svg-icons/faGlobe'
 import { faUtensils } from '@fortawesome/free-solid-svg-icons/faUtensils'
 import { faCamera } from '@fortawesome/free-solid-svg-icons/faCamera'
 import { faComments } from '@fortawesome/free-solid-svg-icons/faComments'
 import { faRobot } from '@fortawesome/free-solid-svg-icons/faRobot'
 
-library.add(faBaby, faSeedling, faHeart, faCalendarDays, faGlobe, faUtensils, faCamera, faComments, faRobot, faPersonPregnant, faBabyCarriage)
+import { faBell } from '@fortawesome/free-solid-svg-icons/faBell'
+import { faShieldAlt } from '@fortawesome/free-solid-svg-icons/faShieldAlt'
+import { faFileAlt } from '@fortawesome/free-solid-svg-icons/faFileAlt'
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons/faQuestionCircle'
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle'
+import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons/faCalendarCheck'
+import { faChartLine } from '@fortawesome/free-solid-svg-icons/faChartLine'
+import { faBan } from '@fortawesome/free-solid-svg-icons/faBan'
+import { faNotesMedical } from '@fortawesome/free-solid-svg-icons/faNotesMedical'
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons/faSignOutAlt'
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight'
+import { faPen } from '@fortawesome/free-solid-svg-icons/faPen'
+
+library.add(faBaby, faSeedling, faHeart, faCalendarDays, faGlobe, faUtensils, faCamera, faComments, faRobot, faPersonPregnant, faBabyCarriage, faBook, faLightbulb, faSearch, faBell, faShieldAlt, faFileAlt, faQuestionCircle, faInfoCircle, faCalendarCheck, faChartLine, faBan, faNotesMedical, faSignOutAlt, faChevronRight, faPen)

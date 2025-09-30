@@ -55,7 +55,7 @@ export default function SplashScreen() {
     }
 
     // Once all loading is complete, perform the necessary redirects.
-    return isAuthenticated ? <Redirect href="/(onboarding)" /> : isFirstTime ? <Redirect href="/(auth)/AuthOnboarding" /> : <Redirect href="/(auth)/login" />;
+    return isAuthenticated ? <Redirect href="/(tabs)/home" /> : isFirstTime ? <Redirect href="/(auth)/AuthOnboarding" /> : <Redirect href="/(auth)/login" />;
 }
 
 const styles = StyleSheet.create({

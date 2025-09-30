@@ -2,15 +2,14 @@ import BoxContainer from '@/components/BoxContainer';
 import CircleContainer from '@/components/CircleContainer';
 import Column from '@/components/Column';
 import FoodItemCard from '@/components/FoodItemCard';
-import FoodTag from '@/components/FoodTag';
 import { GapColumn, GapRow } from '@/components/Gap';
 import Row from '@/components/Row';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedScrollView, ThemedView } from '@/components/ThemedView';
+import { ThemedView } from '@/components/ThemedView';
 import appStyles from '@/constants/Styles';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { Link, Redirect, useNavigation, useRouter } from 'expo-router';
-import { FlatList, Image, Platform, Pressable, TextInput, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
+import { Link, useRouter } from 'expo-router';
+import { FlatList, Image, TextInput, View, StyleSheet, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const recentChecksList = [
@@ -48,128 +47,308 @@ const recentChecksList = [
         date: "1 day ago",
         source: "Source: USDA • Verified Yesterday",
     },
-    {
-        name: "Coffee",
-        description: "Limit caffeine intake to 200mg per day (about one 12-ounce cup).",
-        type: "limit",
-        date: "2 days ago",
-        source: "Source: American College of Obstetricians and Gynecologists • Verified 2 days ago",
-    },
-    {
-        name: "Pasteurized Milk",
-        description: "Excellent source of calcium and vitamin D. Safe and recommended.",
-        type: "safe",
-        date: "3 days ago",
-        source: "Source: NHS • Verified 3 days ago",
-    },
-
-]
+];
 
 export default function HomeScreen() {
     const insets = useSafeAreaInsets();
     const router = useRouter();
+    const isDarkMode = useColorScheme() === 'dark';
 
     const renderListHeader = () => (
         <ThemedView>
-            <GapColumn space={30} />
-            <Row>
-                <Column style={{
-                    flex: 1
-                }}>
-                    <ThemedText type="title">Hello Bola,</ThemedText>
-                    <ThemedText type="defaultSemiBold">24 weeks pregnant</ThemedText>
+            <GapColumn space={24} />
+
+            {/* Hero Section with Gradient Background */}
+            <View style={[styles.heroCard, {
+                backgroundColor: isDarkMode ? '#171a1f'  : '#F8F9FE'
+            }]}>
+                <Row style={{ alignItems: 'flex-start' }}>
+                    <Column style={{ flex: 1 }}>
+                        <ThemedText type="subtitle">Hello Bola! 👋</ThemedText>
+                        <GapColumn space={8} />
+                        <View style={styles.pregnancyBadge}>
+                            <ThemedText style={styles.badgeText}>Week 24 • 2nd Trimester</ThemedText>
+                        </View>
+                        <GapColumn space={12} />
+                        <ThemedText style={styles.dueText}>Due Date: March 15, 2026</ThemedText>
+                    </Column>
+                    <Image
+                        style={styles.profileImage}
+                        source={{ uri: "https://cdn.pixabay.com/photo/2020/05/26/15/42/eagle-5223559_960_720.jpg" }}
+                    />
+                </Row>
+
+                {/* Progress Bar */}
+                <GapColumn space={20} />
+                <View style={styles.progressContainer}>
+                    <Row style={{ justifyContent: 'space-between', marginBottom: 8 }}>
+                        <ThemedText style={styles.progressLabel}>Pregnancy Progress</ThemedText>
+                        <ThemedText style={styles.progressPercentage}>60%</ThemedText>
+                    </Row>
+                    <View style={styles.progressBar}>
+                        <View style={[styles.progressFill, { width: '60%' }]} />
+                    </View>
+                </View>
+            </View>
+
+            <GapColumn space={24} />
+
+            {/* Search Bar with Icon */}
+            <View style={styles.searchContainer}>
+                <FontAwesomeIcon icon={'search'} size={16} color="#9A9A9A" style={{ marginRight: 12 }} />
+                <TextInput
+                    style={[styles.searchInput]}
+                    placeholder='Search food or ask a question...'
+                    placeholderTextColor='#9A9A9A'
+                />
+            </View>
+
+            <GapColumn space={28} />
+
+            {/* Quick Actions Grid */}
+            <ThemedText type="subtitle" style={styles.sectionTitle}>Quick Actions</ThemedText>
+            <GapColumn space={16} />
+
+            <Row style={{ gap: 12 }}>
+                <Link href={'/home/photo-check'} asChild style={{ flex: 1 }}>
+                    <BoxContainer style={styles.actionCard}>
+                        <View style={[styles.iconCircle, { backgroundColor: '#FFE8F0' }]}>
+                            <FontAwesomeIcon icon={'camera'} size={24} color="#E91E63" />
+                        </View>
+                        <GapColumn space={12} />
+                        <ThemedText type="subTitle" style={styles.actionTitle}>Photo Check</ThemedText>
+                        <ThemedText style={styles.actionSubtitle}>Scan food instantly</ThemedText>
+                    </BoxContainer>
+                </Link>
+
+                <Link href={'/chats'} asChild style={{ flex: 1 }}>
+                    <BoxContainer style={styles.actionCard}>
+                        <View style={[styles.iconCircle, { backgroundColor: '#E8F4FF' }]}>
+                            <FontAwesomeIcon icon={'comments'} size={24} color="#2196F3" />
+                        </View>
+                        <GapColumn space={12} />
+                        <ThemedText type="subTitle" style={styles.actionTitle}>AI Chat</ThemedText>
+                        <ThemedText style={styles.actionSubtitle}>Get instant answers</ThemedText>
+                    </BoxContainer>
+                </Link>
+            </Row>
+
+            <GapColumn space={12} />
+
+            <Row style={{ gap: 12 }}>
+                <BoxContainer style={[styles.actionCard, { flex: 1 }]}>
+                    <View style={[styles.iconCircle, { backgroundColor: '#FFF4E8' }]}>
+                        <FontAwesomeIcon icon={'book'} size={24} color="#FF9800" />
+                    </View>
+                    <GapColumn space={12} />
+                    <ThemedText type="subTitle" style={styles.actionTitle}>Food Guide</ThemedText>
+                    <ThemedText style={styles.actionSubtitle}>Browse safe foods</ThemedText>
+                </BoxContainer>
+
+                <BoxContainer style={[styles.actionCard, { flex: 1 }]}>
+                    <View style={[styles.iconCircle, { backgroundColor: '#F0E8FF' }]}>
+                        <FontAwesomeIcon icon={'utensils'} size={24} color="#9C27B0" />
+                    </View>
+                    <GapColumn space={12} />
+                    <ThemedText type="subTitle" style={styles.actionTitle}>Meal Plans</ThemedText>
+                    <ThemedText style={styles.actionSubtitle}>Healthy recipes</ThemedText>
+                </BoxContainer>
+            </Row>
+
+            <GapColumn space={28} />
+
+            {/* Daily Tip Card */}
+            <View style={[styles.tipCard, {
+                backgroundColor: isDarkMode ? '#171a1f' : '#FFFBF0'
+            }]}>
+                <Row style={{ alignItems: 'flex-start' }}>
+                    <View style={[styles.tipIcon, { backgroundColor: '#E8F5E9' }]}>
+                        <FontAwesomeIcon icon={'lightbulb'} size={20} color="#4CAF50" />
+                    </View>
+                    <GapRow space={12} />
+                    <Column style={{ flex: 1 }}>
+                        <ThemedText type="defaultSemiBold" style={{ fontSize: 15, marginBottom: 4 }}>
+                            💡 Daily Tip
+                        </ThemedText>
+                        <ThemedText style={styles.tipText}>
+                            Stay hydrated! Aim for 8-10 glasses of water daily to support your baby's development.
+                        </ThemedText>
+                    </Column>
+                </Row>
+            </View>
+
+            <GapColumn space={40} />
+
+            {/* Recent Checks Header */}
+            <Row style={{ alignItems: 'center' }}>
+                <Column style={{ flex: 1 }}>
+                    <ThemedText type="subtitle" style={styles.sectionTitle}>Recent Checks</ThemedText>
+                    <ThemedText style={styles.sectionSubtitle}>Latest food safety searches</ThemedText>
                 </Column>
-                <Image style={{
-                    width: 49,
-                    height: 49,
-                    borderRadius: 1000,
-                }} source={{ uri: "https://cdn.pixabay.com/photo/2020/05/26/15/42/eagle-5223559_960_720.jpg" }} />
-            </Row>
-            <GapColumn space={30} />
-            <TextInput
-                style={appStyles.input}
-                placeholder='Search food or ask a question'
-                placeholderTextColor='#9A9A9A'
-            />
-            <GapColumn space={30} />
-            <ThemedText type="subtitle">Quick Check</ThemedText>
-            <GapColumn space={10} />
-            <Row style={{
-                flex: 1,
-            }}>
-                <Link href={'/home/photo-check'} asChild>
-                    <BoxContainer style={{
-                        paddingTop: 10,
-                        alignItems: 'center',
-                        flex: 1,
-                        paddingHorizontal: 5
-                    }}>
-                        <CircleContainer color="#EAEBF3" radius={50}>
-                            <FontAwesomeIcon icon={'camera'} size={20} color="#294988" />
-                        </CircleContainer>
-                        <GapColumn space={20} />
-                        <ThemedText style={{
-                            textAlign: 'center'
-                        }} type="subTitle">Photo Check</ThemedText>
-                        <ThemedText style={{
-                            textAlign: 'center'
-                        }} type="default">Scan food with camera</ThemedText>
-                    </BoxContainer>
-                </Link>
-                <GapRow space={20} />
-                <Link href={'/chats'} asChild>
-                    <BoxContainer style={{
-                        alignItems: 'center',
-                        flex: 1,
-                        paddingHorizontal: 15,
-                        paddingTop: 10
-                    }}>
-                        <CircleContainer color="#EAEBF3" radius={50}>
-                            <FontAwesomeIcon icon={'comments'} size={20} color="#294988" />
-                        </CircleContainer>
-                        <GapColumn space={20} />
-                        <ThemedText style={{
-                            textAlign: 'center'
-                        }} type="subTitle">AI Safety Chat</ThemedText>
-                        <ThemedText style={{
-                            textAlign: 'center'
-                        }} type="default">Chat about safety</ThemedText>
-                    </BoxContainer>
-                </Link>
-            </Row>
-            <GapColumn space={20} />
-            <Row>
-                <ThemedText style={{
-                    flex: 1
-                }} type="subtitle">Recent Checks</ThemedText>
                 <Link href="/home/all-checks" asChild>
-                    <ThemedText type="link">View All</ThemedText>
+                    <ThemedText type="link" style={styles.viewAllLink}>View All →</ThemedText>
                 </Link>
             </Row>
-            <GapColumn space={20} />
+            <GapColumn space={16} />
         </ThemedView>
-    )
+    );
 
     return (
-        <ThemedView style={[{
-            paddingTop: insets.top,
-            flex: 1,
-            paddingHorizontal: 24
-        }]}>
+        <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
             <FlatList
                 data={recentChecksList}
                 keyExtractor={(item) => item.name}
                 showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={() => <GapColumn space={20} />}
-                renderItem={({ item }) => <FoodItemCard onTap={() => {
-                    router.push("/(tabs)/home/food-details")
-                }} type={
-                    item.type === 'safe' ? 'safe' : item.type === 'limit' ? 'limit' : 'avoid'
-                } date={item.date} title={item.name} source={item.source} description={item.description} />}
+                ItemSeparatorComponent={() => <GapColumn space={16} />}
+                renderItem={({ item }) => (
+                    <FoodItemCard
+                        onTap={() => router.push("/(tabs)/home/food-details")}
+                        type={item.type === 'safe' ? 'safe' : item.type === 'limit' ? 'limit' : 'avoid'}
+                        date={item.date}
+                        title={item.name}
+                        source={item.source}
+                        description={item.description}
+                    />
+                )}
                 ListHeaderComponent={renderListHeader}
                 ListFooterComponent={() => <GapColumn space={50} />}
-            >
-            </FlatList>
+            />
         </ThemedView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingHorizontal: 20,
+    },
+    heroCard: {
+        borderRadius: 20,
+        padding: 20,
+        borderWidth: 1,
+        borderColor: '#E8EAED',
+    },
+    welcomeText: {
+        fontSize: 28,
+        fontWeight: '700',
+    },
+    pregnancyBadge: {
+        backgroundColor: '#294988',
+        paddingHorizontal: 14,
+        paddingVertical: 6,
+        borderRadius: 20,
+        alignSelf: 'flex-start',
+    },
+    badgeText: {
+        color: '#FFFFFF',
+        fontSize: 13,
+        fontWeight: '600',
+    },
+    dueText: {
+        fontSize: 14,
+        color: '#666',
+        fontWeight: '500',
+    },
+    profileImage: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        borderWidth: 3,
+        borderColor: '#FFFFFF',
+    },
+    progressContainer: {
+        marginTop: 4,
+    },
+    progressLabel: {
+        fontSize: 13,
+        color: '#666',
+        fontWeight: '500',
+    },
+    progressPercentage: {
+        fontSize: 13,
+        color: '#294988',
+        fontWeight: '700',
+    },
+    progressBar: {
+        height: 8,
+        backgroundColor: '#E8EAED',
+        borderRadius: 10,
+        overflow: 'hidden',
+    },
+    progressFill: {
+        height: '100%',
+        backgroundColor: '#4CAF50',
+        borderRadius: 10,
+    },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F5F5F5',
+        borderRadius: 16,
+        paddingHorizontal: 16,
+        height: 52,
+        borderWidth: 1,
+        borderColor: '#E8EAED',
+    },
+    searchInput: {
+        flex: 1,
+        fontSize: 15,
+        color: '#000',
+    },
+    sectionTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+    },
+    sectionSubtitle: {
+        fontSize: 13,
+        color: '#888',
+        marginTop: 2,
+    },
+    actionCard: {
+        padding: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 140,
+    },
+    iconCircle: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    actionTitle: {
+        fontSize: 15,
+        fontWeight: '700',
+        textAlign: 'center',
+    },
+    actionSubtitle: {
+        fontSize: 12,
+        color: '#888',
+        textAlign: 'center',
+        marginTop: 2,
+    },
+    tipCard: {
+        backgroundColor: '#FFFBF0',
+        borderRadius: 16,
+        padding: 16,
+        borderWidth: 1,
+        borderColor: '#FFE8A3',
+    },
+    tipIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    tipText: {
+        fontSize: 13,
+        color: '#666',
+        lineHeight: 20,
+    },
+    viewAllLink: {
+        fontSize: 14,
+        fontWeight: '600',
+    },
+});
