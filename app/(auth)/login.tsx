@@ -36,6 +36,7 @@ export default function LoginScreen() {
     const isDark = colorScheme === 'dark';
 
     const validateForm = () => {
+        console.log("Validating form")
         let isValid = true;
 
         if (!formData.email.trim()) {
@@ -43,6 +44,7 @@ export default function LoginScreen() {
             isValid = false;
 
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            console.log("Invalid email format")
             Alert.alert('Error', 'Please enter a valid email');
             isValid = false;
         }

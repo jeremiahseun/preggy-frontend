@@ -47,22 +47,24 @@ export default function RegisterScreen() {
         }
 
         if (!formData.email.trim()) {
-            newErrors.email = 'Email is required';
+            Alert.alert('Error', 'Email is required');
             isValid = false;
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            newErrors.email = 'Please enter a valid email';
+            Alert.alert('Error', 'Please enter a valid email');
             isValid = false;
         }
 
         if (!formData.password.trim()) {
-            newErrors.password = 'Password is required';
+            Alert.alert('Error', 'Password is required');
             isValid = false;
         } else if (formData.password.length < 8) {
+            Alert.alert('Error', 'Password must be at least 8 characters long');
             newErrors.password = 'Password must be at least 8 characters';
             isValid = false;
         }
 
         if (formData.password !== formData.confirmPassword) {
+            Alert.alert('Error', 'Passwords do not match');
             newErrors.confirmPassword = 'Passwords do not match';
             isValid = false;
         }
