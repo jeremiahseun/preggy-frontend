@@ -259,10 +259,10 @@ export default function TrimesterView() {
                             onPress={() => handleTrimesterSelect("first")}
                         />
                     </Row>
-                    {(selectedWeek !== null && selectedOption === "first" && selectedWeek !== 'unsure') && <Column style={{alignSelf: 'center', alignContent: 'center', alignItems: 'center'}}>
+                    {(selectedWeek !== null && selectedOption === "first" && selectedWeek !== 'unsure') && <Column style={{ alignSelf: 'center', alignContent: 'center', alignItems: 'center' }}>
                         <GapColumn space={15} />
                         <ThemedText type={'defaultSemiBold'}>You selected Week {selectedWeek}</ThemedText>
-                    </Column> }
+                    </Column>}
                 </TouchableOpacity>
                 <GapColumn space={20} />
 

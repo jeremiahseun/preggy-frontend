@@ -1,13 +1,18 @@
+import BottomSheet from '@/components/BottomSheet';
 import BoxContainer from '@/components/BoxContainer';
 import Column from '@/components/Column';
 import { GapColumn, GapRow } from '@/components/Gap';
 import Row from '@/components/Row';
+import { getTrimesterName, getMealPlanText } from '@/components/settings/helpers';
+import ProfileCard from '@/components/settings/profile_card';
+import { DueDateContent, CurrentWeekContent, FoodsToAvoidContent, MedicalNotesContent } from '@/components/settings/SettingsItemComponents';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useProfileStore } from '@/providers/profile_store';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
     ScrollView,
     Image,
@@ -15,30 +20,41 @@ import {
     StyleSheet,
     TouchableOpacity,
     Switch,
-    Alert
+    Alert,
+    useColorScheme,
+    Dimensions
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Mock profile data - replace with actual data from your state management
-const mockProfile = {
-    id: '1',
-    name: 'Bola',
-    country: 'Nigeria',
-    region: 'Lagos',
-    trimester_stage: 2,
-    current_week: 24,
-    due_date: '2026-03-15',
-    everyday_meals: 'all' as const,
-    foods_to_avoid: ['Peanuts', 'Raw Eggs'],
-    anything_else: 'Mild gestational diabetes',
-    created_at: '2025-09-01',
-};
 
 export default function SettingsScreen() {
     const insets = useSafeAreaInsets();
     const router = useRouter();
+    const isDarkMode = useColorScheme() === 'dark';
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [dailyTipsEnabled, setDailyTipsEnabled] = useState(true);
+
+
+    const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+    const bottomSheetHeight = SCREEN_HEIGHT * 0.45;
+
+    const [activeSheet, setActiveSheet] = useState<string | null>(null);
+    const isLoading = useProfileStore((state) => state.isLoading);
+
+    const profile = useProfileStore((state) => state.profile);
+
+
+    const theme = {
+        bg: isDarkMode ? '#000000' : '#F8F9FA',
+        card: isDarkMode ? '#1A1A1A' : '#FFFFFF',
+        text: isDarkMode ? '#FFFFFF' : '#000000',
+        textSec: isDarkMode ? '#A0A0A0' : '#666666',
+        border: isDarkMode ? '#2A2A2A' : '#E5E5E5',
+        primary: '#003A7C',
+        secondary: '#FF9AAC',
+        primaryLight: isDarkMode ? '#1A4A8C' : '#E6EFF8',
+        secondaryLight: isDarkMode ? '#4D2A33' : '#FFE6EB',
+    };
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -47,24 +63,6 @@ export default function SettingsScreen() {
             month: 'long',
             day: 'numeric'
         });
-    };
-
-    const getTrimesterName = (stage: number | null) => {
-        switch (stage) {
-            case 1: return '1st Trimester';
-            case 2: return '2nd Trimester';
-            case 3: return '3rd Trimester';
-            default: return 'Not specified';
-        }
-    };
-
-    const getMealPlanText = (mealPlan: string | null) => {
-        switch (mealPlan) {
-            case 'all': return 'All Foods';
-            case 'pescatarian': return 'Pescatarian';
-            case 'vegetarian': return 'Vegetarian';
-            default: return 'Not specified';
-        }
     };
 
     const handleLogout = () => {
@@ -153,71 +151,35 @@ export default function SettingsScreen() {
         </BoxContainer>
     );
 
+    const dynamicStyles = StyleSheet.create({
+        blueWhiteText: {
+            color: isDarkMode ? '#FFFFFF' : '294988'
+        },
+        logoutButton: {
+            marginHorizontal: 20,
+            backgroundColor: isDarkMode ? '#8B0000' : '#FFEBEE',
+            borderRadius: 16,
+            padding: 15,
+            borderWidth: 1,
+            borderColor: '#FFCDD2',
+        },
+        logoutText: {
+            fontSize: 16,
+            fontWeight: '700',
+            color: isDarkMode ? '#FFFFFF' : '44336',
+        },
+    })
+
     return (
-        <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <GapColumn space={24} />
+        <View
+            style={{ flex: 1 }}>
+            <ScrollView
+                style={styles.container} contentInsetAdjustmentBehavior="automatic" showsVerticalScrollIndicator={false}>
 
-                {/* Header */}
-                <Row style={{ alignItems: 'center', paddingHorizontal: 20 }}>
-                    <ThemedText type="title" style={styles.headerTitle}>Settings</ThemedText>
-                </Row>
-
-                <GapColumn space={28} />
+                <GapColumn space={20} />
 
                 {/* Profile Card */}
-                <View style={styles.profileCard}>
-                    <Row style={{ alignItems: 'center' }}>
-                        <Image
-                            style={styles.profileImage}
-                            source={{ uri: "https://cdn.pixabay.com/photo/2020/05/26/15/42/eagle-5223559_960_720.jpg" }}
-                        />
-                        <GapRow space={16} />
-                        <Column style={{ flex: 1 }}>
-                            <ThemedText type="subtitle" style={styles.profileName}>
-                                {mockProfile.name || 'User'}
-                            </ThemedText>
-                            <GapColumn space={4} />
-                            <ThemedText style={styles.profileLocation}>
-                                📍 {mockProfile.region}, {mockProfile.country}
-                            </ThemedText>
-                        </Column>
-                        <TouchableOpacity onPress={() => router.push('/settings/edit-profile' as any)}>
-                            <View style={styles.editButton}>
-                                <FontAwesomeIcon icon={'pen'} size={14} color="#294988" />
-                            </View>
-                        </TouchableOpacity>
-                    </Row>
-
-                    <GapColumn space={20} />
-
-                    {/* Stats Row */}
-                    <Row style={styles.statsRow}>
-                        <View style={styles.statItem}>
-                            <ThemedText style={styles.statValue}>
-                                Week {mockProfile.current_week}
-                            </ThemedText>
-                            <ThemedText style={styles.statLabel}>Current</ThemedText>
-                        </View>
-                        <View style={styles.statDivider} />
-                        <View style={styles.statItem}>
-                            <ThemedText style={styles.statValue}>
-                                {getTrimesterName(mockProfile.trimester_stage)}
-                            </ThemedText>
-                            <ThemedText style={styles.statLabel}>Stage</ThemedText>
-                        </View>
-                        <View style={styles.statDivider} />
-                        <View style={styles.statItem}>
-                            <ThemedText style={styles.statValue}>
-                                {mockProfile.due_date ?
-                                    new Date(mockProfile.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                                    : 'N/A'
-                                }
-                            </ThemedText>
-                            <ThemedText style={styles.statLabel}>Due Date</ThemedText>
-                        </View>
-                    </Row>
-                </View>
+                <ProfileCard profile={profile} isLoading={isLoading} isDarkMode={isDarkMode} />
 
                 <GapColumn space={24} />
 
@@ -229,8 +191,8 @@ export default function SettingsScreen() {
                     <SettingItem
                         icon="calendar-check"
                         title="Due Date"
-                        value={mockProfile.due_date ? formatDate(mockProfile.due_date) : 'Not set'}
-                        onPress={() => { }}
+                        value={profile?.due_date ? formatDate(profile.due_date) : 'Not set'}
+                        onPress={() => { setActiveSheet('dueDate') }}
                         color="#E91E63"
                     />
                     <GapColumn space={10} />
@@ -238,7 +200,7 @@ export default function SettingsScreen() {
                     <SettingItem
                         icon="chart-line"
                         title="Current Week"
-                        value={`Week ${mockProfile.current_week} • ${getTrimesterName(mockProfile.trimester_stage)}`}
+                        value={profile?.current_week == null ? "No week" : `Week ${profile?.current_week} • ${getTrimesterName(profile?.trimester_stage)}`}
                         onPress={() => { }}
                         color="#2196F3"
                     />
@@ -254,7 +216,7 @@ export default function SettingsScreen() {
                     <SettingItem
                         icon="utensils"
                         title="Meal Plan"
-                        value={getMealPlanText(mockProfile.everyday_meals)}
+                        value={getMealPlanText(profile?.everyday_meals ?? null)}
                         onPress={() => { }}
                         color="#FF9800"
                     />
@@ -263,8 +225,8 @@ export default function SettingsScreen() {
                     <SettingItem
                         icon="ban"
                         title="Foods to Avoid"
-                        value={mockProfile.foods_to_avoid?.length
-                            ? `${mockProfile.foods_to_avoid.length} item${mockProfile.foods_to_avoid.length > 1 ? 's' : ''}`
+                        value={profile?.foods_to_avoid?.length
+                            ? `${profile?.foods_to_avoid.length} item${profile?.foods_to_avoid.length > 1 ? 's' : ''}`
                             : 'None added'
                         }
                         onPress={() => { }}
@@ -275,7 +237,7 @@ export default function SettingsScreen() {
                     <SettingItem
                         icon="notes-medical"
                         title="Medical Notes"
-                        value={mockProfile.anything_else || 'None added'}
+                        value={profile?.anything_else || 'None added'}
                         onPress={() => { }}
                         color="#9C27B0"
                     />
@@ -350,17 +312,72 @@ export default function SettingsScreen() {
                 <GapColumn space={32} />
 
                 {/* Logout Button */}
-                <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+                <TouchableOpacity onPress={handleLogout} style={dynamicStyles.logoutButton}>
                     <Row style={{ alignItems: 'center', justifyContent: 'center' }}>
                         <FontAwesomeIcon icon="sign-out-alt" size={18} color="#F44336" />
                         <GapRow space={10} />
-                        <ThemedText style={styles.logoutText}>Logout</ThemedText>
+                        <ThemedText style={dynamicStyles.logoutText}>Logout</ThemedText>
                     </Row>
                 </TouchableOpacity>
 
                 <GapColumn space={50} />
             </ScrollView>
-        </ThemedView>
+
+            <BottomSheet
+                visible={activeSheet === 'dueDate'}
+                onClose={() => setActiveSheet(null)}
+                title="Due Date"
+                icon="calendar"
+                theme={theme}
+                bottomSheetHeight={bottomSheetHeight}
+            >
+                <DueDateContent dueDate={new Date(profile?.due_date ?? '') || new Date()} currentWeek={profile?.current_week || 0} theme={theme} />
+            </BottomSheet>
+
+            <BottomSheet
+                visible={activeSheet === 'currentWeek'}
+                onClose={() => setActiveSheet(null)}
+                title="Current Week"
+                icon="heart"
+                theme={theme}
+                bottomSheetHeight={bottomSheetHeight}
+            >
+                <CurrentWeekContent currentWeek={profile?.current_week || 0} theme={theme} />
+            </BottomSheet>
+
+            {/* <BottomSheet
+                        visible={activeSheet === 'mealPlan'}
+                        onClose={() => setActiveSheet(null)}
+                        title="Meal Plan"
+                        icon="restaurant"
+                        theme={theme}
+                        bottomSheetHeight={bottomSheetHeight}
+                    >
+                        <MealPlanContent mealPlan={mealPlan} theme={theme} />
+                    </BottomSheet> */}
+
+            <BottomSheet
+                visible={activeSheet === 'foodsToAvoid'}
+                onClose={() => setActiveSheet(null)}
+                title="Foods to Avoid"
+                icon="alert-circle"
+                theme={theme}
+                bottomSheetHeight={bottomSheetHeight}
+            >
+                <FoodsToAvoidContent foodsToAvoid={profile?.foods_to_avoid || []} theme={theme} />
+            </BottomSheet>
+
+            <BottomSheet
+                visible={activeSheet === 'medicalNotes'}
+                onClose={() => setActiveSheet(null)}
+                title="Medical Notes"
+                icon="document-text"
+                theme={theme}
+                bottomSheetHeight={bottomSheetHeight}
+            >
+                <MedicalNotesContent medicalNotes={profile?.anything_else || ''} theme={theme} />
+            </BottomSheet>
+        </View>
     );
 }
 
@@ -368,77 +385,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    headerTitle: {
-        fontSize: 32,
-        fontWeight: '700',
-    },
-    profileCard: {
-        backgroundColor: '#F8F9FE',
-        marginHorizontal: 20,
-        borderRadius: 20,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: '#E8EAED',
-    },
-    profileImage: {
-        width: 70,
-        height: 70,
-        borderRadius: 35,
-        borderWidth: 3,
-        borderColor: '#FFFFFF',
-    },
-    profileName: {
-        fontSize: 20,
-        fontWeight: '700',
-    },
-    profileLocation: {
-        fontSize: 14,
-        color: '#666',
-    },
-    editButton: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: '#FFFFFF',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        borderColor: '#E8EAED',
-    },
-    statsRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        padding: 16,
-    },
-    statItem: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    statValue: {
-        fontSize: 15,
-        fontWeight: '700',
-        color: '#294988',
-        marginBottom: 4,
-        textAlign: 'center',
-    },
-    statLabel: {
-        fontSize: 12,
-        color: '#888',
-    },
-    statDivider: {
-        width: 1,
-        height: 30,
-        backgroundColor: '#E8EAED',
-    },
     section: {
         paddingHorizontal: 20,
     },
     sectionTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#333',
         marginLeft: 4,
     },
     settingItem: {
@@ -454,24 +406,10 @@ const styles = StyleSheet.create({
     settingTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#333',
     },
     settingValue: {
         fontSize: 13,
         color: '#888',
         marginTop: 2,
-    },
-    logoutButton: {
-        marginHorizontal: 20,
-        backgroundColor: '#FFEBEE',
-        borderRadius: 16,
-        padding: 18,
-        borderWidth: 1,
-        borderColor: '#FFCDD2',
-    },
-    logoutText: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: '#F44336',
     },
 });

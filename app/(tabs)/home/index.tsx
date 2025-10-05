@@ -3,13 +3,13 @@ import CircleContainer from '@/components/CircleContainer';
 import Column from '@/components/Column';
 import FoodItemCard from '@/components/FoodItemCard';
 import { GapColumn, GapRow } from '@/components/Gap';
+import TopCard from '@/components/home/TopCard';
 import Row from '@/components/Row';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import appStyles from '@/constants/Styles';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { Link, useRouter } from 'expo-router';
-import { FlatList, Image, TextInput, View, StyleSheet, useColorScheme } from 'react-native';
+import { FlatList, Image, TextInput, View, StyleSheet, useColorScheme, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const recentChecksList = [
@@ -56,52 +56,22 @@ export default function HomeScreen() {
 
     const renderListHeader = () => (
         <ThemedView>
-            <GapColumn space={24} />
 
-            {/* Hero Section with Gradient Background */}
-            <View style={[styles.heroCard, {
-                backgroundColor: isDarkMode ? '#171a1f'  : '#F8F9FE'
-            }]}>
-                <Row style={{ alignItems: 'flex-start' }}>
-                    <Column style={{ flex: 1 }}>
-                        <ThemedText type="subtitle">Hello Bola! 👋</ThemedText>
-                        <GapColumn space={8} />
-                        <View style={styles.pregnancyBadge}>
-                            <ThemedText style={styles.badgeText}>Week 24 • 2nd Trimester</ThemedText>
-                        </View>
-                        <GapColumn space={12} />
-                        <ThemedText style={styles.dueText}>Due Date: March 15, 2026</ThemedText>
-                    </Column>
-                    <Image
-                        style={styles.profileImage}
-                        source={{ uri: "https://cdn.pixabay.com/photo/2020/05/26/15/42/eagle-5223559_960_720.jpg" }}
-                    />
-                </Row>
-
-                {/* Progress Bar */}
-                <GapColumn space={20} />
-                <View style={styles.progressContainer}>
-                    <Row style={{ justifyContent: 'space-between', marginBottom: 8 }}>
-                        <ThemedText style={styles.progressLabel}>Pregnancy Progress</ThemedText>
-                        <ThemedText style={styles.progressPercentage}>60%</ThemedText>
-                    </Row>
-                    <View style={styles.progressBar}>
-                        <View style={[styles.progressFill, { width: '60%' }]} />
-                    </View>
-                </View>
-            </View>
+            <TopCard />
 
             <GapColumn space={24} />
 
             {/* Search Bar with Icon */}
-            <View style={styles.searchContainer}>
+            <TouchableOpacity style={styles.searchContainer} onPress={() => router.push('/(tabs)/home/search')}>
                 <FontAwesomeIcon icon={'search'} size={16} color="#9A9A9A" style={{ marginRight: 12 }} />
                 <TextInput
                     style={[styles.searchInput]}
                     placeholder='Search food or ask a question...'
                     placeholderTextColor='#9A9A9A'
+                    editable={false}
+                    pointerEvents="none"
                 />
-            </View>
+            </TouchableOpacity>
 
             <GapColumn space={28} />
 

@@ -13,6 +13,7 @@ import { faUtensils } from '@fortawesome/free-solid-svg-icons/faUtensils'
 import { faCamera } from '@fortawesome/free-solid-svg-icons/faCamera'
 import { faComments } from '@fortawesome/free-solid-svg-icons/faComments'
 import { faRobot } from '@fortawesome/free-solid-svg-icons/faRobot'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft'
 
 import { faBell } from '@fortawesome/free-solid-svg-icons/faBell'
 import { faShieldAlt } from '@fortawesome/free-solid-svg-icons/faShieldAlt'
@@ -27,4 +28,4 @@ import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons/faSignOutAlt'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight'
 import { faPen } from '@fortawesome/free-solid-svg-icons/faPen'
 
-library.add(faBaby, faSeedling, faHeart, faCalendarDays, faGlobe, faUtensils, faCamera, faComments, faRobot, faPersonPregnant, faBabyCarriage, faBook, faLightbulb, faSearch, faBell, faShieldAlt, faFileAlt, faQuestionCircle, faInfoCircle, faCalendarCheck, faChartLine, faBan, faNotesMedical, faSignOutAlt, faChevronRight, faPen)
+library.add(faBaby, faSeedling, faHeart, faCalendarDays, faGlobe, faUtensils, faCamera, faComments, faRobot, faPersonPregnant, faBabyCarriage, faBook, faLightbulb, faSearch, faBell, faShieldAlt, faFileAlt, faQuestionCircle, faInfoCircle, faCalendarCheck, faChartLine, faBan, faNotesMedical, faSignOutAlt, faChevronRight, faPen, faArrowLeft)

@@ -71,7 +71,7 @@ export default function LoginScreen() {
                 return;
             }
             router.dismissTo('/(tabs)/home')
-        } catch (error : any) {
+        } catch (error: any) {
             Alert.alert('Error', error);
             return;
         }
