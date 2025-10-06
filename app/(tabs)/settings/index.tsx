@@ -247,6 +247,7 @@ export default function SettingsScreen() {
                         value="Version 1.0.0"
                         onPress={() => {
                             console.log("About...")
+                            router.push('/(tabs)/settings/about-screen');
                          }}
                         color="#9E9E9E"
                     />

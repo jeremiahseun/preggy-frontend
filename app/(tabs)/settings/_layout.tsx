@@ -8,6 +8,7 @@ export default function SettingsLayout() {
                     backgroundColor: 'transparent',
                 } }} />
             <Stack.Screen name="edit-profile" options={{ title: 'Edit Profile' }} />
+            <Stack.Screen name="about-screen" options={{ title: 'About Preggy' }} />
         </Stack>
     );
 }
