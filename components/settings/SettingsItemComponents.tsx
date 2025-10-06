@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { View, Text, StyleSheet} from "react-native";
+import { View, Text, StyleSheet, useColorScheme} from "react-native";
 
 // Due Date Content
 export const DueDateContent = ({ dueDate, currentWeek, theme } : {
@@ -14,10 +14,12 @@ export const DueDateContent = ({ dueDate, currentWeek, theme } : {
     const daysRemaining = Math.ceil(diffTime / (24 * 60 * 60 * 1000));
     const progress = ((totalWeeks - weeksRemaining) / totalWeeks) * 100;
 
+    const isDarkMode = useColorScheme() === 'dark';
+
     return (
         <View style={styles.contentContainer}>
             <View style={[styles.dateCard, { backgroundColor: theme.primaryLight }]}>
-                <Text style={[styles.dateText, { color: theme.primary }]}>
+                <Text style={[styles.dateText, { color: isDarkMode ? 'white' : theme.primary }]}>
                     {dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </Text>
                 <Text style={[styles.dateLabelText, { color: theme.textSec }]}>
@@ -76,36 +78,11 @@ export const CurrentWeekContent = ({ currentWeek, theme } : {
     const trimester = currentWeek <= 13 ? 1 : currentWeek <= 27 ? 2 : 3;
     const weekProgress = (currentWeek / 40) * 100;
 
-    const milestones = [
-        'Baby can hear sounds',
-        'Lungs developing rapidly',
-        'Baby is about 12 inches long',
-    ];
-
     return (
         <View style={styles.contentContainer}>
             <View style={[styles.weekCard, { backgroundColor: theme.primary }]}>
                 <Text style={styles.weekNumber}>Week {currentWeek}</Text>
                 <Text style={styles.weekTrimester}>Trimester {trimester} • Second Trimester</Text>
-            </View>
-
-            <View style={styles.milestonesSection}>
-                <View style={styles.milestonesHeader}>
-                    <Ionicons name="heart" size={20} color={theme.secondary} />
-                    <Text style={[styles.milestonesTitle, { color: theme.text }]}>
-                        Baby's Development This Week
-                    </Text>
-                </View>
-
-                {milestones.map((milestone, idx) => (
-                    <View
-                        key={idx}
-                        style={[styles.milestoneItem, { backgroundColor: theme.secondaryLight }]}
-                    >
-                        <View style={[styles.milestoneDot, { backgroundColor: theme.secondary }]} />
-                        <Text style={[styles.milestoneText, { color: theme.text }]}>{milestone}</Text>
-                    </View>
-                ))}
             </View>
 
             <View style={styles.progressSection}>
@@ -183,6 +160,7 @@ export const CurrentWeekContent = ({ currentWeek, theme } : {
 // };
 
 // Foods to Avoid Content
+
 export const FoodsToAvoidContent = ({ foodsToAvoid, theme } : {
     foodsToAvoid: string[];
     theme: any;
@@ -221,7 +199,7 @@ export const FoodsToAvoidContent = ({ foodsToAvoid, theme } : {
                     <View style={styles.avoidIcon}>
                         <Ionicons name="close-circle" size={24} color="#FF4444" />
                     </View>
-                    <Text style={[styles.avoidText, { color: theme.text }]}>{food}</Text>
+                    <Text style={[styles.avoidText, { color: theme.text }]}>{food.toLocaleUpperCase()}</Text>
                 </View>
             ))}
 
@@ -245,7 +223,7 @@ export const MedicalNotesContent = ({ medicalNotes, theme } : {
             <View style={[styles.alertCard, { backgroundColor: theme.primaryLight }]}>
                 <View style={styles.alertHeader}>
                     <Ionicons name="document-text" size={20} color={theme.primary} />
-                    <Text style={[styles.alertTitle, { color: theme.text }]}>Your Health Notes</Text>
+                    <Text style={[styles.alertTitle, { color: theme.text }]}>Your Added Notes</Text>
                 </View>
                 <Text style={[styles.alertText, { color: theme.textSec }]}>
                     Important information to guide your nutrition
@@ -254,38 +232,6 @@ export const MedicalNotesContent = ({ medicalNotes, theme } : {
 
             <View style={[styles.notesCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
                 <Text style={[styles.notesText, { color: theme.text }]}>{medicalNotes}</Text>
-            </View>
-
-            <Text style={[styles.recommendationsTitle, { color: theme.text }]}>
-                AI Recommendations
-            </Text>
-
-            <View style={[styles.recommendationCard, { backgroundColor: '#E8F5E9', borderColor: '#A5D6A7' }]}>
-                <View style={styles.recommendationContent}>
-                    <Text style={styles.recommendationIcon}>✓</Text>
-                    <View style={styles.recommendationText}>
-                        <Text style={[styles.recommendationLabel, { color: theme.text }]}>
-                            Foods to Include
-                        </Text>
-                        <Text style={[styles.recommendationDesc, { color: theme.textSec }]}>
-                            Spinach, lentils, lean red meat, fortified cereals (for iron). Whole grains,
-                            vegetables, lean proteins (for blood sugar management)
-                        </Text>
-                    </View>
-                </View>
-            </View>
-
-            <View style={[styles.recommendationCard, { backgroundColor: '#FFEBEE', borderColor: '#EF9A9A' }]}>
-                <View style={styles.recommendationContent}>
-                    <Text style={styles.recommendationIcon}>✗</Text>
-                    <View style={styles.recommendationText}>
-                        <Text style={[styles.recommendationLabel, { color: theme.text }]}>Foods to Limit</Text>
-                        <Text style={[styles.recommendationDesc, { color: theme.textSec }]}>
-                            Sugary snacks, white bread, sweetened beverages, processed foods high in refined
-                            carbohydrates
-                        </Text>
-                    </View>
-                </View>
             </View>
         </View>
     );

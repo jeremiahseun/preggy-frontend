@@ -13,7 +13,7 @@ export default function NetworkErrorScreen() {
 
     const handleRetry = () => {
         // Navigate to the root to restart the app flow, which should show the splash screen.
-        router.replace('/(auth)/splash');
+        router.dismissTo('/(auth)/splash');
     };
 
     return (

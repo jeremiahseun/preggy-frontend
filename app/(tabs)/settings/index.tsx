@@ -5,6 +5,7 @@ import { GapColumn, GapRow } from '@/components/Gap';
 import Row from '@/components/Row';
 import { getTrimesterName, getMealPlanText } from '@/components/settings/helpers';
 import ProfileCard from '@/components/settings/profile_card';
+import { SettingItem, ToggleSettingItem } from '@/components/settings/SettingsItem';
 import { DueDateContent, CurrentWeekContent, FoodsToAvoidContent, MedicalNotesContent } from '@/components/settings/SettingsItemComponents';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -36,7 +37,7 @@ export default function SettingsScreen() {
 
 
     const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-    const bottomSheetHeight = SCREEN_HEIGHT * 0.45;
+    const bottomSheetHeight = SCREEN_HEIGHT * 0.5;
 
     const [activeSheet, setActiveSheet] = useState<string | null>(null);
     const isLoading = useProfileStore((state) => state.isLoading);
@@ -81,76 +82,6 @@ export default function SettingsScreen() {
         );
     };
 
-    const SettingItem = ({
-        icon,
-        title,
-        value,
-        onPress,
-        showArrow = true,
-        color = '#294988'
-    }: {
-        icon: IconProp;
-        title: string;
-        value?: string;
-        onPress?: () => void;
-        showArrow?: boolean;
-        color?: string;
-    }) => (
-        <TouchableOpacity onPress={onPress} disabled={!onPress}>
-            <BoxContainer style={[styles.settingItem, {
-                height: 'auto'
-            }]}>
-                <Row style={{ alignItems: 'center', flex: 1 }}>
-                    <View style={[styles.settingIcon, { backgroundColor: color + '15' }]}>
-                        <FontAwesomeIcon icon={icon} size={18} color={color} />
-                    </View>
-                    <GapRow space={14} />
-                    <Column style={{ flex: 1 }}>
-                        <ThemedText style={styles.settingTitle}>{title}</ThemedText>
-                        {value && (
-                            <ThemedText style={styles.settingValue}>{value}</ThemedText>
-                        )}
-                    </Column>
-                    {showArrow && (
-                        <FontAwesomeIcon icon={'chevron-right'} size={16} color="#CCCCCC" />
-                    )}
-                </Row>
-            </BoxContainer>
-        </TouchableOpacity>
-    );
-
-    const ToggleSettingItem = ({
-        icon,
-        title,
-        value,
-        onValueChange,
-        color = '#294988'
-    }: {
-        icon: IconProp;
-        title: string;
-        value: boolean;
-        onValueChange: (value: boolean) => void;
-        color?: string;
-    }) => (
-        <BoxContainer style={[styles.settingItem, {
-            height: 'auto'
-        }]}>
-            <Row style={{ alignItems: 'center', flex: 1 }}>
-                <View style={[styles.settingIcon, { backgroundColor: color + '15' }]}>
-                    <FontAwesomeIcon icon={icon} size={18} color={color} />
-                </View>
-                <GapRow space={14} />
-                <ThemedText style={[styles.settingTitle, { flex: 1 }]}>{title}</ThemedText>
-                <Switch
-                    value={value}
-                    onValueChange={onValueChange}
-                    trackColor={{ false: '#E0E0E0', true: '#4CAF50' }}
-                    thumbColor={value ? '#FFFFFF' : '#F4F3F4'}
-                />
-            </Row>
-        </BoxContainer>
-    );
-
     const dynamicStyles = StyleSheet.create({
         blueWhiteText: {
             color: isDarkMode ? '#FFFFFF' : '294988'
@@ -192,7 +123,9 @@ export default function SettingsScreen() {
                         icon="calendar-check"
                         title="Due Date"
                         value={profile?.due_date ? formatDate(profile.due_date) : 'Not set'}
-                        onPress={() => { setActiveSheet('dueDate') }}
+                        onPress={() => {
+                            setActiveSheet('dueDate');
+                         }}
                         color="#E91E63"
                     />
                     <GapColumn space={10} />
@@ -201,7 +134,9 @@ export default function SettingsScreen() {
                         icon="chart-line"
                         title="Current Week"
                         value={profile?.current_week == null ? "No week" : `Week ${profile?.current_week} • ${getTrimesterName(profile?.trimester_stage)}`}
-                        onPress={() => { }}
+                        onPress={() => {
+                            setActiveSheet('currentWeek');
+                        }}
                         color="#2196F3"
                     />
                 </View>
@@ -217,7 +152,9 @@ export default function SettingsScreen() {
                         icon="utensils"
                         title="Meal Plan"
                         value={getMealPlanText(profile?.everyday_meals ?? null)}
-                        onPress={() => { }}
+                        onPress={() => {
+                            setActiveSheet('mealPlan');
+                        }}
                         color="#FF9800"
                     />
                     <GapColumn space={10} />
@@ -229,7 +166,9 @@ export default function SettingsScreen() {
                             ? `${profile?.foods_to_avoid.length} item${profile?.foods_to_avoid.length > 1 ? 's' : ''}`
                             : 'None added'
                         }
-                        onPress={() => { }}
+                        onPress={() => {
+                            setActiveSheet('foodsToAvoid');
+                        }}
                         color="#F44336"
                     />
                     <GapColumn space={10} />
@@ -238,7 +177,9 @@ export default function SettingsScreen() {
                         icon="notes-medical"
                         title="Medical Notes"
                         value={profile?.anything_else || 'None added'}
-                        onPress={() => { }}
+                        onPress={() => {
+                            setActiveSheet('medicalNotes');
+                         }}
                         color="#9C27B0"
                     />
                 </View>
@@ -304,7 +245,9 @@ export default function SettingsScreen() {
                         icon="info-circle"
                         title="About"
                         value="Version 1.0.0"
-                        onPress={() => { }}
+                        onPress={() => {
+                            console.log("About...")
+                         }}
                         color="#9E9E9E"
                     />
                 </View>
@@ -393,23 +336,6 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         marginLeft: 4,
     },
-    settingItem: {
-        padding: 16,
-    },
-    settingIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    settingTitle: {
-        fontSize: 15,
-        fontWeight: '600',
-    },
-    settingValue: {
-        fontSize: 13,
-        color: '#888',
-        marginTop: 2,
-    },
+
+
 });

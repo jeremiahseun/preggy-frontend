@@ -4,7 +4,6 @@ import { ThemedText } from "../ThemedText";
 import { GapColumn, GapRow } from "../Gap";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import Column from "../Column";
-import { useProfileStore } from "@/providers/profile_store";
 import React from "react";
 import { ShimmerProvider, Shimmer } from "react-native-fast-shimmer";
 import { useRouter } from "expo-router";
