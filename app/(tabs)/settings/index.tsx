@@ -9,6 +9,7 @@ import { SettingItem, ToggleSettingItem } from '@/components/settings/SettingsIt
 import { DueDateContent, CurrentWeekContent, FoodsToAvoidContent, MedicalNotesContent } from '@/components/settings/SettingsItemComponents';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useAuthStore } from '@/providers/auth_store';
 import { useProfileStore } from '@/providers/profile_store';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -43,6 +44,7 @@ export default function SettingsScreen() {
     const isLoading = useProfileStore((state) => state.isLoading);
 
     const profile = useProfileStore((state) => state.profile);
+    const signout = useAuthStore((state) => state.signOut);
 
 
     const theme = {
@@ -73,9 +75,12 @@ export default function SettingsScreen() {
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
-                    text: 'Logout', style: 'destructive', onPress: () => {
+                    text: 'Logout', style: 'destructive', onPress: async () => {
                         // Handle logout logic here
                         console.log('Logging out...');
+                        await signout();
+                        router.dismissTo('/(auth)/login');
+
                     }
                 }
             ]
