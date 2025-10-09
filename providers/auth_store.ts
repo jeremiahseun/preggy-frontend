@@ -9,6 +9,7 @@ import {
     supabase
 } from '../core/services/supabaseService';
 import { StorageService } from "@/core/services/storageService";
+import { useProfileStore } from "./profile_store";
 
 const api = new Api();
 
@@ -111,6 +112,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             set({ error: error.message, isLoading: false });
         } else {
             // The onAuthStateChange listener will handle clearing the session
+            useProfileStore.getState().clearProfile()
             set({ session: null, user: null, isAuthenticated: false, isLoading: false });
         }
     },

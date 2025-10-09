@@ -10,6 +10,7 @@ interface ProfileState {
     fetchProfile: () => Promise<void>;
     updateProfile: (updates: UpdateProfileParams) => Promise<void>;
     updateTrimesterDetails: (params: { dueDate?: Date | null, trimester?: number | null, current_week?: number | null }) => Promise<void>;
+    clearProfile: () => void;
 }
 
 export const useProfileStore = create<ProfileState>((set, get) => ({
@@ -28,6 +29,10 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const profileData = await getProfile();
+            if (profileData === get().profile) {
+                set({ isLoading: false });
+                return; // No change, avoid unnecessary re-renders
+            }
             set({ profile: profileData, isLoading: false });
         } catch (e: any) {
             set({ error: e.message, isLoading: false });
@@ -107,6 +112,9 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
             set({ isLoading: false });
         }
     },
+    clearProfile: () => {
+        set ({profile: null, isLoading: false, error: null})
+    }
 }));
 
 
