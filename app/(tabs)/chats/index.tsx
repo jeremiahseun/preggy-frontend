@@ -1,202 +1,228 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Link, useRouter } from 'expo-router';
-import { StyleSheet, FlatList, View, TouchableOpacity, Dimensions } from 'react-native';
+import { useRouter } from 'expo-router';
+import { StyleSheet, FlatList, View, TouchableOpacity, TextInput, useColorScheme } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
-import { use } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Row from '@/components/Row';
 
-
-// Enhanced mock data with more pregnancy-focused content
-const mockConversations = [
+// Chat history with the AI assistant
+const chatHistory = [
     {
         id: '1',
-        name: 'Dr. Sarah Johnson',
-        role: 'Obstetrician',
-        lastMessage: 'Your latest ultrasound results look perfect! Baby is growing well.',
+        lastMessage: 'Yes, back pain is very common at 24 weeks! Try gentle prenatal yoga...',
         time: '10:30 AM',
-        unreadCount: 2,
-        avatar: '👩‍⚕️',
-        priority: 'high',
-        type: 'doctor'
+        date: 'Today',
+        hasUnread: true,
+        topic: 'Back Pain Relief'
     },
     {
         id: '2',
-        name: 'Maya - AI Assistant',
-        role: 'Pregnancy Support',
-        lastMessage: 'Would you like some gentle stretches for your back pain?',
-        time: '2:15 PM',
-        unreadCount: 0,
-        avatar: '🤖',
-        priority: 'normal',
-        type: 'ai'
+        lastMessage: 'Great question! Here are iron-rich foods perfect for your trimester...',
+        time: 'Yesterday',
+        date: 'Yesterday',
+        hasUnread: false,
+        topic: 'Nutrition & Iron'
     },
     {
         id: '3',
-        name: 'Nutrition Guide',
-        role: 'Dietary Support',
-        lastMessage: 'Here are iron-rich foods perfect for your second trimester',
-        time: 'Yesterday',
-        unreadCount: 1,
-        avatar: '🥗',
-        priority: 'normal',
-        type: 'bot'
+        lastMessage: 'Your baby is now the size of a cantaloupe! 🍈 Let me tell you about...',
+        time: '2d ago',
+        date: 'Oct 4',
+        hasUnread: false,
+        topic: 'Week 24 Update'
     },
     {
         id: '4',
-        name: 'Birth Prep Coach',
-        role: 'Labor & Delivery',
-        lastMessage: 'Let\'s practice breathing exercises for labor preparation',
-        time: '2d ago',
-        unreadCount: 0,
-        avatar: '🌸',
-        priority: 'normal',
-        type: 'coach'
+        lastMessage: 'Here are some breathing exercises that can help during labor...',
+        time: '3d ago',
+        date: 'Oct 3',
+        hasUnread: false,
+        topic: 'Labor Preparation'
     },
     {
         id: '5',
-        name: 'Weekly Check-in',
-        role: 'Week 24 Updates',
-        lastMessage: 'Your baby is now the size of a cantaloupe! 🍈',
-        time: '3d ago',
-        unreadCount: 3,
-        avatar: '📅',
-        priority: 'normal',
-        type: 'update'
-    }
+        lastMessage: "Swelling in feet is normal, but here's when you should call your doctor...",
+        time: '5d ago',
+        date: 'Oct 1',
+        hasUnread: false,
+        topic: 'Pregnancy Symptoms'
+    },
+];
+
+// Quick action suggestions
+const quickActions = [
+    { id: '1', icon: 'restaurant-outline', text: 'Find Foods', color: '#10B981', bgColor: '#D1FAE5' },
+    { id: '2', icon: 'fitness-outline', text: 'Exercises', color: '#3B82F6', bgColor: '#DBEAFE' },
+    { id: '3', icon: 'moon-outline', text: 'Sleep Tips', color: '#8B5CF6', bgColor: '#E9D5FF' },
+    { id: '4', icon: 'heart-outline', text: 'Symptoms', color: '#F59E0B', bgColor: '#FEF3C7' },
 ];
 
 export default function ChatsScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const backgroundColor = useThemeColor({}, 'background');
+    const cardColor = useThemeColor({ light: 'white', dark: '#171a1f' }, 'background');
+    const borderColor = useThemeColor({ light: '#F1F5F9', dark: 'grey' }, 'tint');
 
     const handleChatPress = (chatId: string) => {
         router.push('/(tabs)/chats/conversation');
     };
 
+    const handleNewChat = () => {
+        router.push('/(tabs)/chats/conversation');
+    };
+
+    const handleQuickAction = (action: string) => {
+        // Navigate to conversation with pre-filled prompt
+        router.push('/(tabs)/chats/conversation');
+    };
+
     const renderHeader = () => (
-        <ThemedView style={{
-            paddingTop: insets.top + 10,
-            paddingHorizontal: 20,
-            paddingBottom: 24,
-        }}>
+        <ThemedView style={styles.headerContainer}>
             <View style={styles.headerTop}>
                 <View>
-                    <ThemedText type="title" style={styles.headerTitle}>Your Care Team</ThemedText>
+                    <ThemedText type="title">Chat with Maya</ThemedText>
                     <View style={styles.subtitleContainer}>
-                        <Ionicons name="heart" size={16} color="#F472B6" />
-                        <ThemedText style={styles.subtitle}>Always here to support your journey</ThemedText>
+                        <Ionicons name="sparkles" size={16} color="#F472B6" />
+                        <ThemedText style={styles.subtitle}>Your AI pregnancy companion</ThemedText>
                     </View>
                 </View>
-                <TouchableOpacity style={styles.profileButton}>
-                    <View style={styles.pregnancyBadge}>
-                        <ThemedText style={styles.badgeText}>24w</ThemedText>
-                    </View>
-                </TouchableOpacity>
+                <View style={styles.weekBadge}>
+                    <ThemedText style={styles.weekBadgeText}>Week 24</ThemedText>
+                </View>
+            </View>
+
+            {/* Quick Actions */}
+            <View style={styles.quickActionsContainer}>
+                <ThemedText type='defaultSemiBold' style={{ marginBottom: 12 }}>What can I help with?</ThemedText>
+                <View style={styles.quickActionsGrid}>
+                    {quickActions.map((action) => (
+                        <TouchableOpacity
+                            key={action.id}
+                            style={[styles.quickActionCard, {
+                                backgroundColor: cardColor, borderColor: borderColor
+                            }]}
+                            onPress={() => handleQuickAction(action.text)}
+                            activeOpacity={0.7}
+                        >
+                            <View style={[styles.quickActionIcon, { backgroundColor: action.bgColor }]}>
+                                <Ionicons name={action.icon as any} size={24} color={action.color} />
+                            </View>
+                            <ThemedText style={{
+                                fontWeight: '600',
+                                fontSize: 14,
+                                lineHeight: 20,
+                            }}>{action.text}</ThemedText>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            </View>
+
+            {/* New Chat Button */}
+            <TouchableOpacity
+                style={styles.newChatButton}
+                onPress={handleNewChat}
+                activeOpacity={0.8}
+            >
+                <Ionicons name="add-circle" size={24} color="white" />
+                <ThemedText style={styles.newChatButtonText}>Start New Conversation</ThemedText>
+            </TouchableOpacity>
+
+            {/* Recent Chats Header */}
+            <View style={styles.recentHeader}>
+                <ThemedText type='defaultSemiBold' style={{ marginBottom: 12 }}>Recent Conversations</ThemedText>
+                <ThemedText style={[styles.recentCount, {
+                    // color: '#9CA3AF',
+                    backgroundColor: borderColor,
+                }]}>{chatHistory.length}</ThemedText>
             </View>
         </ThemedView>
     );
 
-    const renderChatItem = ({ item }: { item: typeof mockConversations[0] }) => (
+    const renderChatItem = ({ item }: { item: typeof chatHistory[0] }) => (
         <TouchableOpacity
-            style={styles.chatItem}
+            style={[styles.chatItem, {
+                backgroundColor: cardColor, borderColor: borderColor
+            }]}
             onPress={() => handleChatPress(item.id)}
             activeOpacity={0.7}
         >
-            <ThemedView style={styles.chatContent}>
-                <View style={styles.avatarContainer}>
-                    <View style={[styles.avatar, getAvatarStyle(item.type)]}>
-                        <ThemedText style={styles.avatarText}>{item.avatar}</ThemedText>
-                    </View>
-                    {item.priority === 'high' && (
-                        <View style={styles.priorityIndicator}>
-                            <Ionicons name="alert-circle" size={12} color="#EF4444" />
-                        </View>
-                    )}
+            <View style={styles.chatIconContainer}>
+                <View style={styles.chatIcon}>
+                    <Ionicons name="chatbubble-ellipses" size={20} color="#F472B6" />
                 </View>
+                {item.hasUnread && <View style={styles.unreadDot} />}
+            </View>
 
-                <View style={styles.messageContent}>
-                    <View style={styles.messageHeader}>
-                        <ThemedText style={styles.senderName}>{item.name}</ThemedText>
-                        <ThemedText style={styles.messageTime}>{item.time}</ThemedText>
-                    </View>
-                    <ThemedText style={styles.senderRole}>{item.role}</ThemedText>
-                    <ThemedText
-                        style={styles.lastMessage}
-                        numberOfLines={2}
-                    >
-                        {item.lastMessage}
+            <View style={styles.chatContent}>
+                <Row style={styles.chatHeader}>
+                    <ThemedText type='defaultSemiBold' numberOfLines={1}>
+                        {item.topic}
                     </ThemedText>
-                </View>
+                    <ThemedText style={styles.chatTime}>{item.time}</ThemedText>
+                </Row>
+                <ThemedText style={styles.chatMessage} numberOfLines={2}>
+                    {item.lastMessage}
+                </ThemedText>
+            </View>
 
-                <View style={styles.chatActions}>
-                    {item.unreadCount > 0 && (
-                        <View style={styles.unreadBadge}>
-                            <ThemedText style={styles.unreadText}>
-                                {item.unreadCount > 9 ? '9+' : item.unreadCount}
-                            </ThemedText>
-                        </View>
-                    )}
-                    <Ionicons name="chevron-forward" size={16} color="#94A3B8" />
-                </View>
-            </ThemedView>
+            <Ionicons name="chevron-forward" size={20} color="#CBD5E1" />
         </TouchableOpacity>
+    );
+
+    const renderEmptyState = () => (
+        <View style={styles.emptyState}>
+            <View style={styles.emptyIconContainer}>
+                <Ionicons name="chatbubbles-outline" size={64} color="#CBD5E1" />
+            </View>
+            <ThemedText type='subTitle' style={{
+                marginBottom: 8,
+                textAlign: 'center'
+            }}>No conversations yet</ThemedText>
+            <ThemedText style={styles.emptySubtitle}>
+                Start chatting with Maya to get personalized pregnancy support
+            </ThemedText>
+        </View>
     );
 
     return (
         <ThemedView style={[styles.container, { backgroundColor }]}>
             <FlatList
-                data={mockConversations}
+                contentInsetAdjustmentBehavior="automatic"
+                data={chatHistory}
                 keyExtractor={(item) => item.id}
                 ListHeaderComponent={renderHeader}
                 renderItem={renderChatItem}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={() => <View style={styles.separator} />}
+                ListEmptyComponent={renderEmptyState}
             />
         </ThemedView>
     );
 }
-
-const getAvatarStyle = (type: string) => {
-    switch (type) {
-        case 'doctor':
-            return { backgroundColor: '#EBF8FF', borderColor: '#3B82F6' };
-        case 'ai':
-            return { backgroundColor: '#F0FDF4', borderColor: '#10B981' };
-        case 'bot':
-            return { backgroundColor: '#FEF7FF', borderColor: '#8B5CF6' };
-        case 'coach':
-            return { backgroundColor: '#FFF7ED', borderColor: '#F59E0B' };
-        case 'update':
-            return { backgroundColor: '#FEF3F2', borderColor: '#EF4444' };
-        default:
-            return { backgroundColor: '#F8FAFC', borderColor: '#CBD5E1' };
-    }
-};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FAFAFA',
     },
-    header: {
+    listContent: {
+        flexGrow: 1,
+        paddingBottom: 20,
+    },
+    headerContainer: {
         paddingHorizontal: 20,
-        paddingTop: 20,
+        paddingTop: 60,
         paddingBottom: 24,
+        backgroundColor: 'transparent',
     },
     headerTop: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: 20,
-    },
-    headerTitle: {
-        fontSize: 28,
-        fontWeight: '700',
-        marginBottom: 4,
+        marginBottom: 24,
     },
     subtitleContainer: {
         flexDirection: 'row',
@@ -204,155 +230,173 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     subtitle: {
-        fontSize: 14,
+        fontSize: 15,
         color: '#6B7280',
         fontWeight: '500',
     },
-    profileButton: {
-        alignItems: 'center',
-    },
-    pregnancyBadge: {
-        backgroundColor: '#FEE2E2',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
+    weekBadge: {
+        backgroundColor: '#FEF3C7',
+        paddingHorizontal: 14,
+        paddingVertical: 8,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#FCA5A5',
+        borderColor: '#FDE68A',
     },
-    badgeText: {
-        fontSize: 12,
+    weekBadgeText: {
+        fontSize: 13,
         fontWeight: '600',
-        color: '#DC2626',
+        color: '#92400E',
     },
-    quickActions: {
+    quickActionsContainer: {
+        marginBottom: 24,
+    },
+    quickActionsGrid: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        flexWrap: 'wrap',
         gap: 12,
     },
     quickActionCard: {
         flex: 1,
-        alignItems: 'center',
-        padding: 12,
+        minWidth: '47%',
         backgroundColor: '#FFFFFF',
+        padding: 16,
+        borderRadius: 16,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    quickActionIcon: {
+        width: 52,
+        height: 52,
+        borderRadius: 26,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    newChatButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#F472B6',
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+        borderRadius: 16,
+        marginBottom: 32,
+        gap: 10,
+        shadowColor: '#F472B6',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    newChatButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: 'white',
+    },
+    recentHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    recentCount: {
+        fontSize: 14,
+        fontWeight: '600',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 12,
+    },
+    chatItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        marginHorizontal: 20,
+        marginBottom: 12,
+        padding: 16,
         borderRadius: 16,
         borderWidth: 1,
         borderColor: '#F1F5F9',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
-        shadowRadius: 2,
+        shadowRadius: 3,
         elevation: 1,
     },
-    quickActionIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
-    quickActionEmoji: {
-        fontSize: 18,
-    },
-    quickActionText: {
-        fontSize: 11,
-        fontWeight: '600',
-        color: '#4B5563',
-    },
-    listContent: {
-        flexGrow: 1,
-    },
-    chatItem: {
-        marginHorizontal: 0,
-        paddingVertical: 16,
-        paddingHorizontal: 20,
-    },
-    chatContent: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-    },
-    avatarContainer: {
+    chatIconContainer: {
         position: 'relative',
-        marginRight: 12,
+        marginRight: 14,
     },
-    avatar: {
-        width: 52,
-        height: 52,
-        borderRadius: 26,
+    chatIcon: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: '#FCE7F3',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 2,
+        borderColor: '#FBCFE8',
     },
-    avatarText: {
-        fontSize: 20,
-    },
-    priorityIndicator: {
+    unreadDot: {
         position: 'absolute',
         top: -2,
         right: -2,
-        width: 18,
-        height: 18,
-        borderRadius: 9,
-        backgroundColor: 'white',
-        justifyContent: 'center',
-        alignItems: 'center',
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: '#F472B6',
         borderWidth: 2,
         borderColor: 'white',
     },
-    messageContent: {
+    chatContent: {
         flex: 1,
         marginRight: 12,
     },
-    messageHeader: {
-        flexDirection: 'row',
+    chatHeader: {
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 2,
+        alignItems: 'center',
+        marginBottom: 4,
     },
-    senderName: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#1F2937',
-        flex: 1,
-    },
-    messageTime: {
+    chatTime: {
         fontSize: 12,
         color: '#9CA3AF',
         fontWeight: '500',
     },
-    senderRole: {
-        fontSize: 12,
-        color: '#6B7280',
-        fontWeight: '500',
-        marginBottom: 4,
-    },
-    lastMessage: {
+    chatMessage: {
         fontSize: 14,
-        color: '#4B5563',
+        color: '#6B7280',
         lineHeight: 20,
     },
-    chatActions: {
+    emptyState: {
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 8,
+        paddingVertical: 60,
+        paddingHorizontal: 40,
     },
-    unreadBadge: {
-        backgroundColor: '#F472B6',
-        minWidth: 20,
-        height: 20,
-        borderRadius: 10,
+    emptyIconContainer: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: '#F9FAFB',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 6,
+        marginBottom: 24,
     },
-    unreadText: {
-        fontSize: 11,
+    emptyTitle: {
+        fontSize: 20,
         fontWeight: '600',
-        color: 'white',
+        color: '#374151',
+        marginBottom: 8,
+        textAlign: 'center',
     },
-    separator: {
-        height: 1,
-        backgroundColor: '#F1F5F9',
-        marginLeft: 84,
+    emptySubtitle: {
+        fontSize: 15,
+        color: '#6B7280',
+        textAlign: 'center',
+        lineHeight: 22,
     },
 });
