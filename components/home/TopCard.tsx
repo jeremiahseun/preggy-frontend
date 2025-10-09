@@ -11,29 +11,33 @@ import { Profile } from "@/src/interfaces/profile";
 import { getPregnancyProgress, getReadableDate, getTrimesterStage } from "@/src/utils/helpers";
 
 export default function TopCard() {
-
-    useEffect(() => {
-        // Fetch profile when component mounts
-        if (useProfileStore.getState().profile === null) {
-            useProfileStore.getState().fetchProfile();
-        }
-      []
-    })
     const isDarkMode = useColorScheme() === 'dark';
     const profile = useProfileStore((state) => state.profile);
     const isLoading = useProfileStore((state) => state.isLoading);
+    const fetchProfile = useProfileStore((state) => state.fetchProfile);
 
+
+    useEffect(() => {
+        // Fetch profile when component mounts
+        if (profile === null) {
+            fetchProfile();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+
+    const shimmerStyle = React.useMemo(() => ({
+        height: 200,
+        borderRadius: 20,
+        marginHorizontal: 16,
+        marginTop: 16,
+        backgroundColor: isDarkMode ? '#171a1f' : '#F8F9FE',
+    }), [isDarkMode]);
 
     return (
         <ShimmerProvider duration={1000}>
             {isLoading ? (
-                <Shimmer style={{
-                    height: 200,
-                    borderRadius: 20,
-                    marginHorizontal: 16,
-                    marginTop: 16,
-                    backgroundColor: isDarkMode ? '#171a1f' : '#F8F9FE',
-                }}></Shimmer>
+                <Shimmer style={shimmerStyle}></Shimmer>
             ) : (
                 profile ? <SectionCard profile={profile} /> : <TryAgainCard />
             )}
@@ -61,7 +65,7 @@ function TryAgainCard() {
 }
 
 
-function SectionCard({profile}: {profile: Profile}) {
+function SectionCard({ profile }: { profile: Profile }) {
     const isDarkMode = useColorScheme() === 'dark';
     return (
         <ThemedView>

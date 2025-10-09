@@ -9,7 +9,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { Link, useRouter } from 'expo-router';
-import { FlatList, Image, TextInput, View, StyleSheet, useColorScheme, TouchableOpacity } from 'react-native';
+import { FlatList, TextInput, View, StyleSheet, useColorScheme, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const recentChecksList = [
