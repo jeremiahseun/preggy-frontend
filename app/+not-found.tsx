@@ -237,7 +237,7 @@ export default function NotFoundScreen() {
                                 <GapColumn space={10}/>
 
                                 {/* AI Assistant Button */}
-                                <Link href="/chats" asChild>
+                                <Link href="/(tabs)/chats" asChild>
                                     <TouchableOpacity style={[styles.actionButton, styles.secondaryAction, {
                                         borderColor: isDark ? '#4ECDC4' : '#4ECDC4',
                                     }]}>

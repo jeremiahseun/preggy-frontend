@@ -65,7 +65,7 @@ function SectionCard({ profile }: { profile: any }) {
                         📍 {profile.region}, {profile.country}
                     </ThemedText>
                 </Column>
-                <TouchableOpacity onPress={() => router.push('/settings/edit-profile' as any)}>
+                <TouchableOpacity onPress={() => router.push('/(tabs)/settings/edit-profile' as any)}>
                     <View style={styles.editButton}>
                         <FontAwesomeIcon icon={'pen'} size={14} color="#294988" />
                     </View>

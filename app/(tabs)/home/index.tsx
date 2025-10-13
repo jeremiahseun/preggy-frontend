@@ -80,7 +80,7 @@ export default function HomeScreen() {
             <GapColumn space={16} />
 
             <Row style={{ gap: 12 }}>
-                <Link href={'/home/photo-check'} asChild style={{ flex: 1 }}>
+                <Link href={'/(tabs)/home/all-checks'} asChild style={{ flex: 1 }}>
                     <BoxContainer style={styles.actionCard}>
                         <View style={[styles.iconCircle, { backgroundColor: '#FFE8F0' }]}>
                             <FontAwesomeIcon icon={'camera'} size={24} color="#E91E63" />
@@ -91,7 +91,7 @@ export default function HomeScreen() {
                     </BoxContainer>
                 </Link>
 
-                <Link href={'/chats'} asChild style={{ flex: 1 }}>
+                <Link href={'/(tabs)/chats'} asChild style={{ flex: 1 }}>
                     <BoxContainer style={styles.actionCard}>
                         <View style={[styles.iconCircle, { backgroundColor: '#E8F4FF' }]}>
                             <FontAwesomeIcon icon={'comments'} size={24} color="#2196F3" />
@@ -155,7 +155,7 @@ export default function HomeScreen() {
                     <ThemedText type="subtitle" style={styles.sectionTitle}>Recent Checks</ThemedText>
                     <ThemedText style={styles.sectionSubtitle}>Latest food safety searches</ThemedText>
                 </Column>
-                <Link href="/home/all-checks" asChild>
+                <Link href="/(tabs)/home/all-checks" asChild>
                     <ThemedText type="link" style={styles.viewAllLink}>View All →</ThemedText>
                 </Link>
             </Row>

@@ -61,7 +61,7 @@ export default function PhotoCheckScreen() {
                 paddingVertical: 15,
                 paddingHorizontal: 70,
                 borderRadius: 10
-            }} title="Show from Gallery" navigateTo='/home/analyzing-photo' />
+            }} title="Show from Gallery" navigateTo='/(tabs)/home/analyzing-photo' />
         </ThemedView>
     );
 }
