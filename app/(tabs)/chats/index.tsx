@@ -1,55 +1,14 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useRouter } from 'expo-router';
-import { StyleSheet, FlatList, View, TouchableOpacity, TextInput, useColorScheme } from 'react-native';
+import { StyleSheet, FlatList, View, TouchableOpacity, ActivityIndicator, useColorScheme } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Row from '@/components/Row';
-
-// Chat history with the AI assistant
-const chatHistory = [
-    {
-        id: '1',
-        lastMessage: 'Yes, back pain is very common at 24 weeks! Try gentle prenatal yoga...',
-        time: '10:30 AM',
-        date: 'Today',
-        hasUnread: true,
-        topic: 'Back Pain Relief'
-    },
-    {
-        id: '2',
-        lastMessage: 'Great question! Here are iron-rich foods perfect for your trimester...',
-        time: 'Yesterday',
-        date: 'Yesterday',
-        hasUnread: false,
-        topic: 'Nutrition & Iron'
-    },
-    {
-        id: '3',
-        lastMessage: 'Your baby is now the size of a cantaloupe! 🍈 Let me tell you about...',
-        time: '2d ago',
-        date: 'Oct 4',
-        hasUnread: false,
-        topic: 'Week 24 Update'
-    },
-    {
-        id: '4',
-        lastMessage: 'Here are some breathing exercises that can help during labor...',
-        time: '3d ago',
-        date: 'Oct 3',
-        hasUnread: false,
-        topic: 'Labor Preparation'
-    },
-    {
-        id: '5',
-        lastMessage: "Swelling in feet is normal, but here's when you should call your doctor...",
-        time: '5d ago',
-        date: 'Oct 1',
-        hasUnread: false,
-        topic: 'Pregnancy Symptoms'
-    },
-];
+import { useChatStore } from '@/providers/chat_store';
+import { useEffect } from 'react';
+import { ChatMessage } from '@/src/interfaces/db';
 
 // Quick action suggestions
 const quickActions = [
@@ -66,8 +25,14 @@ export default function ChatsScreen() {
     const cardColor = useThemeColor({ light: 'white', dark: '#171a1f' }, 'background');
     const borderColor = useThemeColor({ light: '#F1F5F9', dark: 'grey' }, 'tint');
 
+    const { chatHistory, isLoading, error, fetchChatHistory } = useChatStore();
+
+    useEffect(() => {
+        fetchChatHistory();
+    }, []);
+
     const handleChatPress = (chatId: string) => {
-        router.push('/(tabs)/chats/conversation');
+        router.push(`/(tabs)/chats/conversation?id=${chatId}`);
     };
 
     const handleNewChat = () => {
@@ -141,30 +106,30 @@ export default function ChatsScreen() {
         </ThemedView>
     );
 
-    const renderChatItem = ({ item }: { item: typeof chatHistory[0] }) => (
+    const renderChatItem = ({ item }: { item: ChatMessage }) => (
         <TouchableOpacity
             style={[styles.chatItem, {
                 backgroundColor: cardColor, borderColor: borderColor
             }]}
-            onPress={() => handleChatPress(item.id)}
+            onPress={() => handleChatPress(item.conversation_id)}
             activeOpacity={0.7}
         >
             <View style={styles.chatIconContainer}>
                 <View style={styles.chatIcon}>
                     <Ionicons name="chatbubble-ellipses" size={20} color="#F472B6" />
                 </View>
-                {item.hasUnread && <View style={styles.unreadDot} />}
+                {/* {item.hasUnread && <View style={styles.unreadDot} />} */}
             </View>
 
             <View style={styles.chatContent}>
                 <Row style={styles.chatHeader}>
                     <ThemedText type='defaultSemiBold' numberOfLines={1}>
-                        {item.topic}
+                        {item.content?.substring(0, 25)}...
                     </ThemedText>
-                    <ThemedText style={styles.chatTime}>{item.time}</ThemedText>
+                    <ThemedText style={styles.chatTime}>{new Date(item.created_at).toLocaleTimeString()}</ThemedText>
                 </Row>
                 <ThemedText style={styles.chatMessage} numberOfLines={2}>
-                    {item.lastMessage}
+                    {item.content}
                 </ThemedText>
             </View>
 
@@ -187,12 +152,20 @@ export default function ChatsScreen() {
         </View>
     );
 
+    if (isLoading) {
+        return <ActivityIndicator style={{ flex: 1 }} />
+    }
+
+    if (error) {
+        return <View style={styles.centered}><ThemedText>Error: {error}</ThemedText></View>
+    }
+
     return (
         <ThemedView style={[styles.container, { backgroundColor }]}>
             <FlatList
                 contentInsetAdjustmentBehavior="automatic"
                 data={chatHistory}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.conversation_id}
                 ListHeaderComponent={renderHeader}
                 renderItem={renderChatItem}
                 contentContainerStyle={styles.listContent}
@@ -207,6 +180,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FAFAFA',
+    },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     listContent: {
         flexGrow: 1,

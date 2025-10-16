@@ -125,3 +125,41 @@ export async function updateProfile(profileData: UpdateProfileParams) {
 
     return data as Profile;
 }
+
+// --- CHAT FUNCTIONS ---
+
+/**
+ * Fetches the most recent message for each conversation for the current user.
+ */
+export async function getChatHistory() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("No authenticated user found.");
+
+    const { data, error } = await supabase
+        .from('chat_messages')
+        .select('id, conversation_id, content, created_at, message_type, food_item_details')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching chat history:', error);
+        throw error;
+    }
+
+    if (!data) {
+        return [];
+    }
+
+    // Process to get only the latest message for each conversation
+    const latestMessages = data.reduce((acc, message) => {
+        if (!acc[message.conversation_id]) {
+            acc[message.conversation_id] = message;
+        }
+        return acc;
+    }, {} as Record<string, typeof data[0]>);
+
+    // The history is the array of these latest messages, sorted by most recent first.
+    const history = Object.values(latestMessages).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    return history;
+}
