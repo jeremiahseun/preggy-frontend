@@ -35,6 +35,7 @@ const ConversationScreen = () => {
 
     const isDark = colorScheme === 'dark';
 
+
     const sampleMessages: Message[] = [
         {
             id: '2',

@@ -19,7 +19,14 @@ baseUrl: string = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 }
 
 /// AUTH GET REQUEST
-    async authGet({ url, token }: AuthRequest): Promise<Response> {
+    async authGet({ url, token, queryParams }: AuthRequest): Promise<Response> {
+        let encodedString = "";
+        if (queryParams && queryParams !== null) {
+            for (var param in queryParams) {
+                encodedString += `&${param}=${queryParams[param]}`
+            }
+            url += "?" + JSON.stringify(encodedString);
+        }
     return await fetch(`${this.baseUrl}/${url}`, {
         method: "GET",
         headers: {

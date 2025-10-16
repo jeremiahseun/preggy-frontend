@@ -77,15 +77,15 @@ export default function RegisterScreen() {
 
         if (!validateForm()) return;
 
-        await register(formData);
+       const registerError = await register(formData);
 
         try {
-            if (error) {
-                Alert.alert('Error', error);
+            if (registerError) {
+                Alert.alert('Error', registerError);
                 return;
             }
             router.push("/(onboarding)");
-
+            
         } catch (error) {
             console.log(error);
             Alert.alert('Error', 'Registration failed. Please try again.');

@@ -31,7 +31,7 @@ export default function LoginScreen() {
     });
     const router = useRouter();
 
-    const { isLoading, login, error } = useAuthStore();
+    const { isLoading, login } = useAuthStore();
 
     const isDark = colorScheme === 'dark';
 
@@ -65,14 +65,14 @@ export default function LoginScreen() {
         if (!validateForm()) return;
 
         try {
-            await login(formData);
-            if (error) {
-                Alert.alert('Error', error);
+            const loginError = await login(formData);
+            if (loginError) {
+                Alert.alert('Error', loginError.message);
                 return;
             }
             router.dismissTo('/(tabs)/home')
         } catch (error: any) {
-            Alert.alert('Error', error);
+            Alert.alert('Error', error.message || 'An unexpected error occurred.');
             return;
         }
     };

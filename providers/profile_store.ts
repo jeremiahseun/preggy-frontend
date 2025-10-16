@@ -7,9 +7,9 @@ interface ProfileState {
     profile: Profile | null;
     isLoading: boolean;
     error: string | null;
-    fetchProfile: () => Promise<void>;
-    updateProfile: (updates: UpdateProfileParams) => Promise<void>;
-    updateTrimesterDetails: (params: { dueDate?: Date | null, trimester?: number | null, current_week?: number | null }) => Promise<void>;
+    fetchProfile: () => Promise<any>;
+    updateProfile: (updates: UpdateProfileParams) => Promise<any>;
+    updateTrimesterDetails: (params: { dueDate?: Date | null, trimester?: number | null, current_week?: number | null }) => Promise<any>;
     clearProfile: () => void;
 }
 
@@ -29,11 +29,15 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const profileData = await getProfile();
+            if (!profileData) {
+                return "Unable to get profile.";
+            }
             if (profileData === get().profile) {
                 set({ isLoading: false });
                 return; // No change, avoid unnecessary re-renders
             }
             set({ profile: profileData, isLoading: false });
+            return null;
         } catch (e: any) {
             set({ error: e.message, isLoading: false });
         }
@@ -51,7 +55,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
             await get().fetchProfile()
         };
 
-        if (!get().profile) return;
+        if (!get().profile) return "Unable to get profile. Try relogging in.";
 
         set({ isLoading: true, error: null });
         try {
@@ -59,8 +63,10 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
             const updatedProfile = await updateProfile(updates);
             // Update the local state with the new profile data from the server
             set({ profile: updatedProfile, isLoading: false });
+            return null;
         } catch (e: any) {
             set({ error: e.message, isLoading: false });
+            return e;
         }
     },
 
@@ -104,7 +110,14 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         }
 
         try {
-            await get().updateProfile(profileUpdates);
+           const res = await get().updateProfile(profileUpdates);
+           if (res) {
+            set({ error: res, isLoading: false });
+            return res;
+           } else {
+            set({ isLoading: false });
+            return null;
+           }
         } catch (e: any) {
             // The error will be set by the underlying updateProfile action
             set({ error: e });

@@ -24,10 +24,10 @@ type AuthState = {
 
     getToken: () => Promise<string | null>;
     initializeAuth: () => () => void; // Returns the unsubscribe function
-    register: (params: Parameters<typeof registerService>[0]) => Promise<void>;
-    login: (params: Parameters<typeof loginService>[0]) => Promise<void>;
+    register: (params: Parameters<typeof registerService>[0]) => Promise<any>;
+    login: (params: Parameters<typeof loginService>[0]) => Promise<any>;
     signOut: () => Promise<void>;
-    forgotPassword: (email: string) => Promise<void>;
+    forgotPassword: (email: string) => Promise<any>;
     setIsFirstTime: (isFirstTime: boolean) => void;
 }
 
@@ -86,21 +86,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const { data, error } = await registerService({ email, password, fullName });
         if (error) {
             set({ error: error.message, isLoading: false });
+            return error;
         } else {
             // The onAuthStateChange listener will handle setting the session
-            set({ isLoading: false });
+            set({ isLoading: false, error: null });
+            return null;
         }
     },
 
     // Log in an existing user
     login: async ({ email, password }) => {
         set({ isLoading: true, error: null });
-        const { error } = await loginService({ email, password });
+        const { data, error } = await loginService({ email, password });
         if (error) {
             set({ error: error.message, isLoading: false });
+            return error;
         } else {
             // The onAuthStateChange listener will handle setting the session
-            set({ isLoading: false });
+            set({ isLoading: false, error: null });
+            return null;
         }
     },
 
@@ -113,7 +117,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         } else {
             // The onAuthStateChange listener will handle clearing the session
             useProfileStore.getState().clearProfile()
-            set({ session: null, user: null, isAuthenticated: false, isLoading: false });
+            set({ session: null, user: null, isAuthenticated: false, isLoading: false, error: null });
         }
     },
 
@@ -123,9 +127,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const { error } = await forgotPasswordService(email);
         if (error) {
             set({ error: error.message, isLoading: false });
+            return error;
         } else {
-            set({ isLoading: false });
+            set({ isLoading: false, error: null });
             // You can add logic here to show a confirmation message to the user
+            return null;
         }
     },
 

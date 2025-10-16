@@ -2,7 +2,8 @@
 interface AuthRequest {
     url: string,
     formData: any,
-    token: string
+    token: string,
+    queryParams?: Record<string, any>
 }
 
 interface UserData {
