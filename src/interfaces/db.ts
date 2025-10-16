@@ -3,7 +3,6 @@ export type MessageSenderType = 'user' | 'assistant';
 export interface ChatMessage {
     id: number;
     created_at: string;
-    user_id: string;
     conversation_id: string;
     message_type: MessageSenderType;
     content: string | null;

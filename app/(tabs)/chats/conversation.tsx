@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { MessageInput, MessageLimitReached } from '@/components/chats/Messaging';
 import TypingIndicator from '@/components/chats/TypingIndicator';
@@ -20,6 +20,7 @@ import { Message } from '@/src/interfaces/Conversations';
 import NewConversationBar from '@/components/chats/ConversationBar';
 import ChatRenderFoodItem from '@/components/chats/ChatFoodItem';
 import ChatHeader from '@/components/chats/ChatHeader';
+import { useChatStore } from '@/providers/chat_store';
 
 
 const ConversationScreen = () => {
@@ -28,179 +29,53 @@ const ConversationScreen = () => {
     const router = useRouter();
     const scrollViewRef = useRef<ScrollView>(null);
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [isLoadingMessages, setLoadingMessages] = useState(true);
-    const [isLoadingSendMessage, setLoadingSendMessage] = useState(false);
     const [isLimitReached, setLimitReached] = useState(false);
 
     const isDark = colorScheme === 'dark';
-
-
-    const sampleMessages: Message[] = [
-        {
-            id: '2',
-            type: 'user',
-            content: "I'm craving sushi but worried about raw fish. Is it safe during pregnancy?",
-            timestamp: '2:34 PM',
-        },
-        {
-            id: '3',
-            type: 'assistant',
-            content: "I understand your craving! Raw fish in sushi poses risks during pregnancy due to potential bacteria and parasites that could harm you and your baby.",
-            timestamp: '2:35 PM',
-            foodItem: {
-                name: 'Raw fish sushi',
-                status: 'avoid',
-                description: 'Risk of foodborne illness and parasites',
-                lastVerified: 'Jan 2024',
-                alternatives: [
-                    'California rolls (cooked crab)',
-                    'Cooked shrimp tempura rolls',
-                    'Vegetable rolls',
-                ],
-                sources: [
-                    {
-                        name: 'NHS - Foods to avoid in pregnancy',
-                        description: 'Raw shellfish and fish guidance',
-                        updated: 'Dec 2023',
-                        verified: true,
-                    },
-                    {
-                        name: 'ACOG - Nutrition During Pregnancy',
-                        description: 'Seafood safety recommendations',
-                        updated: 'Nov 2023',
-                        verified: true,
-                    },
-                    {
-                        name: 'FDA - Advice about Eating Fish',
-                        description: 'Fish consumption guidelines',
-                        updated: 'Oct 2023',
-                        verified: true,
-                    },
-                ],
-            },
-        },
-        {
-            id: '4',
-            type: 'user',
-            content: 'What about smoked salmon bagels? My partner brought some home.',
-            timestamp: '2:38 PM',
-        },
-        {
-            id: '5',
-            type: 'assistant',
-            content: "Great question! Smoked salmon requires some caution, but it's not completely off-limits.",
-            timestamp: '2:40 PM',
-            foodItem: {
-                name: 'Cold smoked salmon',
-                status: 'limit',
-                description: 'Possible listeria risk - choose carefully',
-                lastVerified: 'Jan 2024',
-                guidelines: [
-                    'Cook it first - Heat in pasta dishes, quiches, or toast it',
-                    'Fresh from trusted source - Buy from reputable stores, consume quickly',
-                ],
-                trimester: {
-                    trimesterStage: "1st",
-                    trimesterNote: "Your immune system is slightly stronger now, but still be cautious with cold-smoked fish."
-                },
-            },
-        },
-        {
-            id: '6',
-            type: 'user',
-            content: "What about dragon fruit? I've never had it before.",
-            timestamp: '2:42 PM',
-        },
-        {
-            id: '7',
-            type: 'assistant',
-            content: "Dragon fruit is safe and nutritious during pregnancy! It's rich in vitamin C, fiber, and antioxidants.",
-            timestamp: '2:44 PM',
-            foodItem: {
-                name: 'Dragon fruit',
-                status: 'safe',
-                lastVerified: 'Jan 2024',
-                description: 'Nutritious tropical fruit, safe when washed',
-                benefits: [
-                    "High in folate for baby's development",
-                    'Natural fiber aids digestion',
-                ],
-            },
-        },
-        {
-            id: '8',
-            type: 'user',
-            content: "How do you get all these information?",
-            timestamp: '3:12 PM',
-        },
-        {
-            id: '9',
-            type: 'assistant',
-            content: "I have a knowledge base that feeds me with all the information that I am giving you. And the best part? They are verified.",
-            timestamp: '3:14 PM',
-        },
-    ];
+    const { id: conversationId } = useLocalSearchParams<{ id: string }>();
+    const {
+        activeConversationMessages,
+        isLoadingConversation,
+        isSendingMessage,
+        fetchConversationMessages,
+        clearActiveConversation,
+        sendMessage: sendMessageAction
+    } = useChatStore();
 
     useEffect(() => {
-        // Simulate loading messages
-        setLoadingMessages(true);
-        const timer = setTimeout(() => {
-            setMessages(prev => [...prev, ...sampleMessages]);
-            setLoadingMessages(false); // Set to false after messages are loaded
+        if (conversationId) {
+            fetchConversationMessages(conversationId);
+        }
 
-            // Scroll to bottom after loading
-            setTimeout(() => {
-                scrollViewRef.current?.scrollToEnd({ animated: true });
-            }, 100);
-        }, 2000);
-        return () => clearTimeout(timer);
-    }, []);
+        // Cleanup function to clear messages when the component unmounts
+        return () => {
+            clearActiveConversation();
+        };
+    }, [conversationId]);
+
+    // Map ChatMessage to Message
+    const messages: Message[] = activeConversationMessages.map(msg => ({
+        id: msg.id.toString(),
+        type: msg.message_type,
+        content: msg.content || '',
+        timestamp: new Date(msg.created_at).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+        }),
+        foodItem: msg.food_item_details
+    }));
 
     const sendMessage = () => {
         if (message.trim()) {
-            const newMessage: Message = {
-                id: Date.now().toString(),
-                type: 'user',
-                content: message.trim(),
-                timestamp: new Date().toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true,
-                }),
-            };
-            setMessages(prev => [...prev, newMessage]);
+            sendMessageAction(message.trim());
             setMessage('');
-            setLoadingSendMessage(true);
-            setLimitReached(true)
-
             // Scroll to bottom after sending
             setTimeout(() => {
                 scrollViewRef.current?.scrollToEnd({ animated: true });
             }, 100);
-
-            // Simulate assistant response
-            setTimeout(() => {
-                const assistantResponse: Message = {
-                    id: Date.now().toString(),
-                    type: 'assistant',
-                    content: "This is a simulated response.",
-                    timestamp: new Date().toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true,
-                    }),
-                };
-                setMessages(prev => [...prev, assistantResponse]);
-                setLoadingSendMessage(false);
-                setTimeout(() => {
-                    scrollViewRef.current?.scrollToEnd({ animated: true });
-                }, 100);
-            }, 2000);
         }
     };
-
-
 
     const renderMessage = (msg: Message) => {
         return (
@@ -229,7 +104,7 @@ const ConversationScreen = () => {
                         {msg.content}
                     </Text>
 
-                    {msg.foodItem && <ChatRenderFoodItem foodItem={msg.foodItem}/>}
+                    {msg.foodItem && <ChatRenderFoodItem foodItem={msg.foodItem} />}
                 </View>
 
                 <Text
@@ -271,7 +146,7 @@ const ConversationScreen = () => {
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
             >
                 {
-                    isLoadingMessages ? (
+                    isLoadingConversation ? (
                         <View style={styles.loadingContainer}>
                             <ActivityIndicator color={isDark ? "#FFFFFF" : "#1F2937"} size="small" />
                         </View>
@@ -287,7 +162,7 @@ const ConversationScreen = () => {
                             showsVerticalScrollIndicator={false}
                         >
                             {messages.map(renderMessage)}
-                            {isLoadingSendMessage && <TypingIndicator />}
+                            {isSendingMessage && <TypingIndicator />}
                         </ScrollView>
                     )
                 }

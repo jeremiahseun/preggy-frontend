@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import { AppState } from 'react-native';
 import { Profile, UpdateProfileParams } from '@/src/interfaces/profile';
+import { ChatMessage } from '@/src/interfaces/db';
 
 // --- INITIALIZATION ---
 // You should store these in an environment file (e.g., .env)
@@ -162,4 +163,27 @@ export async function getChatHistory() {
     const history = Object.values(latestMessages).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     return history;
+}
+
+/**
+ * Fetches all messages for a specific conversation.
+ * @param conversationId The ID of the conversation to fetch.
+ */
+export async function getConversationMessages(conversationId: string) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("No authenticated user found.");
+
+    const { data, error } = await supabase
+        .from('chat_messages')
+        .select('*') // Select all fields for the conversation view
+        .eq('conversation_id', conversationId)
+        .eq('user_id', user.id) // Ensure user can only access their own messages
+        .order('created_at', { ascending: true }); // Order from oldest to newest
+
+    if (error) {
+        console.error('Error fetching conversation messages:', error);
+        throw error;
+    }
+
+    return data as ChatMessage[];
 }
