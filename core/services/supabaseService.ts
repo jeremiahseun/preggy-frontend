@@ -96,6 +96,25 @@ export async function getRecentFoods(): Promise<{ data: any[] | null, error: any
     return { data: data || [], error: null };
 }
 
+/**
+ * Fetches a single food by its ID.
+ * @param foodId The ID of the food to fetch.
+ */
+export async function getFoodById(foodId: string): Promise<{ data: any | null, error: any | null }> {
+    const { data, error } = await supabase
+        .from('foods')
+        .select('*')
+        .eq('id', foodId)
+        .single();
+
+    if (error) {
+        console.error(`Error fetching food with id ${foodId}:`, error);
+        return { data: null, error };
+    }
+
+    return { data, error: null };
+}
+
 
 // --- PROFILE FUNCTIONS ---
 

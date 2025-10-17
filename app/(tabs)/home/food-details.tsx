@@ -2,7 +2,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { StyleSheet, Image, Pressable, View, useColorScheme } from 'react-native';
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import Row from '@/components/Row';
@@ -23,17 +23,26 @@ import { IconButton } from '@/components/Buttons';
 import SafeFoodDetailsView from '@/components/food_details_type/SafeFoodDetails';
 import LimitFoodDetailsView from '@/components/food_details_type/LimitFoodDetails';
 import AvoidFoodDetailsView from '@/components/food_details_type/AvoidFoodDetails';
+import { useFoodDetailsStore } from '@/providers/food_details_store';
 
 
 export default function FoodDetailsScreen() {
     const navigation = useNavigation();
     const isDarkMode = useColorScheme() === 'dark';
-    const params = useLocalSearchParams<{ foodName?: string; foodImage?: string; foodType?: 'safe' | 'limit' | 'avoid' }>();
-    const { foodName, foodImage, foodType = 'safe' } = params;
+    const params = useLocalSearchParams<{ id?: string }>();
+    const { id } = params;
+
+    const { foodDetails, isLoading, error, fetchFoodDetails } = useFoodDetailsStore();
+
+    useEffect(() => {
+        if (id) {
+            fetchFoodDetails(id);
+        }
+    }, [id]);
 
     useLayoutEffect(() => {
         navigation.setOptions({
-            title: foodName || 'Food Details',
+            title: 'Food Details',
             headerRight: () => (
                 <Row>
                     <Pressable>
@@ -46,10 +55,10 @@ export default function FoodDetailsScreen() {
                 </Row>
             ),
         });
-    }, [navigation, foodName]);
+    }, [navigation]);
 
     const getSafetyInfo = () => {
-        switch (foodType) {
+        switch (foodDetails.safety_type) {
             case 'safe':
                 return {
                     text: 'Safe to eat',
@@ -76,8 +85,9 @@ export default function FoodDetailsScreen() {
     const safetyInfo = getSafetyInfo();
 
     return (
+
         <ParallaxScrollView
-            headerImage={<Image source={{ uri: foodImage || 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }} style={styles.image} />}
+            headerImage={<Image source={{ uri: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }} style={styles.image} />}
             headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
         >
             {/* <AvoidFoodDetailsView

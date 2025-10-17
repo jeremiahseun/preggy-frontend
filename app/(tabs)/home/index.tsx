@@ -171,8 +171,7 @@ export default function HomeScreen() {
                 ItemSeparatorComponent={() => <GapColumn space={16} />}
                 renderItem={({ item }) => (
                     <FoodItemCard
-                        onTap={() => router.push("/(tabs)/home/food-details")}
-                        type={item.safety_type ?? 'safe'}
+                        onTap={() => router.push(`/(tabs)/home/food-details?id=${item.id}`)}                        type={item.safety_type ?? 'safe'}
                         date={getRealDateTime(new Date(item.created_at))}
                         title={item.name}
                         source={item.sources}
