@@ -78,6 +78,24 @@ export async function forgotPassword(email: string) {
     return { data, error };
 }
 
+// --- FOODS --- //
+/**
+ * Fetches the latest 5 (recent) foods
+ */
+export async function getRecentFoods(): Promise<{ data: any[] | null, error: any | null }> {
+    const { data, error } = await supabase
+        .from('foods')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+    if (error) {
+        console.error('Error fetching foods:', error);
+        return { data: null, error };
+    }
+    return { data: data || [], error: null };
+}
+
 
 // --- PROFILE FUNCTIONS ---
 

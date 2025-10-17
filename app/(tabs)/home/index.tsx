@@ -9,50 +9,49 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { Link, useRouter } from 'expo-router';
-import { FlatList, TextInput, View, StyleSheet, useColorScheme, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, FlatList, TextInput, View, StyleSheet, useColorScheme, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useHomeStore } from '@/providers/home_store';
+import { getRealDateTime } from '@/src/utils/helpers';
 
-const recentChecksList = [
-    {
-        name: "Green Apples",
-        description: "Excellent source of fiber and vitamin C. Safe to eat during pregnancy.",
-        type: "safe",
-        date: "2 hours ago",
-        source: "Source: NHS, WHO • Verified Today",
-    }, {
-        name: "Soft Cheeses",
-        description: "Some soft cheeses like Brie and Camembert can contain Listeria. Avoid unless specified pasteurized.",
-        type: "avoid",
-        date: "3 hours ago",
-        source: "Source: FDA, CDC • Verified Today",
-    },
-    {
-        name: "Canned Tuna",
-        description: "Good source of Omega-3s, but limit intake due to mercury content. Max 2-3 servings per week.",
-        type: "limit",
-        date: "5 hours ago",
-        source: "Source: EPA, FDA • Verified Today",
-    },
-    {
-        name: "Cooked Salmon",
-        description: "Rich in Omega-3 fatty acids, beneficial for baby's brain development. Safe to eat.",
-        type: "safe",
-        date: "1 day ago",
-        source: "Source: American Pregnancy Association • Verified Yesterday",
-    },
-    {
-        name: "Deli Meats",
-        description: "Can carry Listeria. Avoid unless heated to steaming hot before consumption.",
-        type: "avoid",
-        date: "1 day ago",
-        source: "Source: USDA • Verified Yesterday",
-    },
-];
+const ListFeedback = ({ isLoading, error, hasData }: { isLoading: boolean, error: string | null, hasData: boolean }) => {
+    if (isLoading) {
+        return (
+            <View style={{ padding: 20 }}>
+                <ActivityIndicator />
+            </View>
+        );
+    }
+
+    if (error) {
+        return (
+            <View style={{ padding: 20, alignItems: 'center' }}>
+                <ThemedText style={{ color: 'red' }}>Error: {error}</ThemedText>
+            </View>
+        );
+    }
+
+    if (!hasData) {
+        return (
+            <View style={{ padding: 20, alignItems: 'center' }}>
+                <ThemedText>No recent checks found.</ThemedText>
+            </View>
+        );
+    }
+
+    return <GapColumn space={50} />;
+};
 
 export default function HomeScreen() {
     const insets = useSafeAreaInsets();
     const router = useRouter();
-    const isDarkMode = useColorScheme() === 'dark';
+    const isDarkMode = useColorScheme() === 'dark'
+    const {recentFoods, isLoading, error, fetchRecentFoods} = useHomeStore();
+
+    useEffect(() => {
+        fetchRecentFoods();
+    }, []);
 
     const renderListHeader = () => (
         <ThemedView>
@@ -166,22 +165,22 @@ export default function HomeScreen() {
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
             <FlatList
-                data={recentChecksList}
-                keyExtractor={(item) => item.name}
+                data={recentFoods}
+                keyExtractor={(item) => item.id.toString()}
                 showsVerticalScrollIndicator={false}
                 ItemSeparatorComponent={() => <GapColumn space={16} />}
                 renderItem={({ item }) => (
                     <FoodItemCard
                         onTap={() => router.push("/(tabs)/home/food-details")}
-                        type={item.type === 'safe' ? 'safe' : item.type === 'limit' ? 'limit' : 'avoid'}
-                        date={item.date}
+                        type={item.safety_type ?? 'safe'}
+                        date={getRealDateTime(new Date(item.created_at))}
                         title={item.name}
-                        source={item.source}
-                        description={item.description}
+                        source={item.sources}
+                        description={item.details?.description ?? 'No description available'}
                     />
                 )}
                 ListHeaderComponent={renderListHeader}
-                ListFooterComponent={() => <GapColumn space={50} />}
+                ListFooterComponent={<ListFeedback isLoading={isLoading} error={error} hasData={recentFoods.length > 0} />}
             />
         </ThemedView>
     );
