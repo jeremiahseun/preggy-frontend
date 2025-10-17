@@ -29,6 +29,7 @@ type AuthState = {
     signOut: () => Promise<void>;
     forgotPassword: (email: string) => Promise<any>;
     setIsFirstTime: (isFirstTime: boolean) => void;
+    refreshToken: () => Promise<void>;
 }
 
 const tokenValue: string = 'token';
@@ -78,6 +79,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             console.log('Unsubscribing from auth...');
             subscription.unsubscribe();
         };
+    },
+
+    // Refresh Token
+    refreshToken: async () => {
+        console.log('Refreshing token...');
+        set({ isLoading: true, error: null });
+        const { data, error } = await supabase.auth.refreshSession();
+        if (error) {
+            console.log(`Error refreshing session: ${error.message}`);
+            set({ error: error.message, isLoading: false });
+        } else {
+            set({ session: data.session, user: data.user, isAuthenticated: true, isLoading: false, error: null });
+            set({ token: data.session?.access_token ?? null });
+            StorageService.saveData(data.session?.access_token, tokenValue);
+        }
+
     },
 
     // Register a new user

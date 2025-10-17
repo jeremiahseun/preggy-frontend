@@ -9,7 +9,7 @@ import { Colors } from '@/constants/Colors';
 
 export default function SplashScreen() {
 
-    const { isLoading: isAuthLoading, isAuthenticated, isFirstTime, initializeAuth, getToken } = useAuthStore();
+    const { isLoading: isAuthLoading, isAuthenticated, isFirstTime, initializeAuth, getToken, refreshToken } = useAuthStore();
     const netInfo = useNetInfo();
 
     useEffect(() => {
@@ -29,6 +29,7 @@ export default function SplashScreen() {
             // If determined to be online, proceed with authentication.
             const unsubscribe = initializeAuth();
             getToken();
+            refreshToken();
 
             // Clean up the auth listener when the component unmounts.
             return () => {
