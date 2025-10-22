@@ -175,7 +175,7 @@ export async function getChatHistory() {
 
     const { data, error } = await supabase
         .from('chat_messages')
-        .select('id, conversation_id, content, created_at, message_type, food_item_details')
+        .select('id, conversation_id, content, created_at, message_type')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -212,9 +212,11 @@ export async function getConversationMessages(conversationId: string) {
 
     const { data, error } = await supabase
         .from('chat_messages')
-        .select('*') // Select all fields for the conversation view
+        // This tells Supabase: "Get all columns from chat_messages,
+        // and also get all columns from the related 'foods' table."
+        .select('*, foods(*)')
         .eq('conversation_id', conversationId)
-        .eq('user_id', user.id) // Ensure user can only access their own messages
+        .eq('user_id', user.id)
         .order('created_at', { ascending: true }); // Order from oldest to newest
 
     if (error) {

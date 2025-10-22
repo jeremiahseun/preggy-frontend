@@ -45,13 +45,16 @@ const ConversationScreen = () => {
     useEffect(() => {
         if (conversationId) {
             fetchConversationMessages(conversationId);
+            setTimeout(() => {
+                scrollViewRef.current?.scrollToEnd({ animated: true });
+            }, 500);
         }
 
         // Cleanup function to clear messages when the component unmounts
         return () => {
             clearActiveConversation();
         };
-    }, [conversationId]);
+    }, [conversationId, scrollViewRef]);
 
     // Map ChatMessage to Message
     const messages: Message[] = activeConversationMessages.map(msg => ({
@@ -63,7 +66,7 @@ const ConversationScreen = () => {
             minute: '2-digit',
             hour12: true,
         }),
-        foodItem: msg.food_item_details
+        foodItem: msg.foods
     }));
 
     const sendMessage = () => {

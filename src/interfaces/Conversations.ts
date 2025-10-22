@@ -7,29 +7,76 @@ interface Message {
     foodItem?: FoodItem;
 }
 
-type FoodItem = {
+export type Sources = {
     name: string;
-    status: 'safe' | 'avoid' | 'limit';
+    url: string;
+}
+
+// Similar/Alternative Food Item
+type SimilarFoodItem = {
+    name: string;
+    type: "safe" | "limit" | "avoid";
     description: string;
-    reason?: string;
-    alternatives?: string[];
-    guidelines?: string[];
-    benefits?: string[];
-    trimester?: TrimesterInfo;
-    lastVerified?: string;
-    sources?: Array<Sources>;
-}
+    image: string;
+};
 
-type TrimesterInfo = {
-    trimesterStage?: "1st" | "2nd" | "3rd" | null;
-    trimesterNote?: string;
-}
+// Avoid Food Item Types
+type WhyAvoidRisk = {
+    nameOfRisk: string;
+    levelOfRisk: string;
+    description: string;
+    causesOfRisk: string[];
+};
 
-type Sources = {
+type FoodsContainingSelectedFoodItem = {
     name: string;
     description: string;
-    updated: string;
-    verified: boolean;
-}
+};
 
-export {Sources, TrimesterInfo, FoodItem, Message}
+// Base Food Item
+type BaseFoodItem = {
+    id: string;
+    name: string;
+    sources: string;
+    verifiedDate: string;
+    trimesterNotes: string;
+    details: any;
+};
+
+// Safe Food Item
+export type SafeFoodItem = BaseFoodItem & {
+    safety_type: "safe";
+    description: string;
+    nutritionalBenefits: string[];
+    preparationGuidelines: string[];
+    whyItThisSafe: string;
+    ingredientsToWatch: string[];
+    similarFoods: SimilarFoodItem[];
+};
+
+// Limit Food Item
+export type LimitFoodItem = BaseFoodItem & {
+    safety_type: "limit";
+    description: string;
+    safeConsumptionGuidelines: string[];
+    healthConsiderations: string[];
+    betterAlternatives: string[];
+    whyLimitThisFood: string;
+    ifYouChooseToConsume: string[];
+    saferAlternatives: SimilarFoodItem[];
+};
+
+// Avoid Food Item
+export type AvoidFoodItem = BaseFoodItem & {
+    safety_type: "avoid";
+    whyAvoidDescription: string;
+    whyAvoidRisk: WhyAvoidRisk[];
+    otherConsiderations: string[];
+    betterAlternatives: string[];
+    safeCookingGuidelines: string[];
+    foodsContainingSelectedFoods: FoodsContainingSelectedFoodItem[];
+};
+
+export type FoodItem = SafeFoodItem | LimitFoodItem | AvoidFoodItem;
+
+export {Message}

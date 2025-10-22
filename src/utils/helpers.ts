@@ -6,6 +6,13 @@ function getTrimesterStage(week: number): string {
     return "Unknown Trimester";
 }
 
+export function getMonthAndYearDateShort(date: string | null): string {
+    if (!date) return "A while ago";
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short' };
+    return new Date(date).toLocaleDateString(undefined, options);
+}
+
+
 function getReadableDate(date: string | null): string {
     if (!date) return "No Due Date";
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };

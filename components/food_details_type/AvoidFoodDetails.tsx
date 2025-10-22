@@ -137,11 +137,13 @@ export default function AvoidFoodDetailsView({ name, whyAvoidDescription, source
                     backgroundColor: isDarkMode ? '#171a1f' : '#FAFAFBFF',
                 }}>
                     <Row style={{
-                        alignItems: 'center'
+                        alignItems: 'center',
                     }}>
                         <LeafIcon color={'#4AC477FF'} width={16} height={16} />
                         <GapRow space={10} />
-                        <ThemedText type="defaultSemiBold">Sources: {sources}</ThemedText>
+                        <ThemedText style={{
+                            width: '95%',
+                        }} type="defaultSemiBold">Sources: {sources}</ThemedText>
                     </Row>
                     <Row style={{
                         alignItems: 'center'
@@ -215,7 +217,7 @@ export default function AvoidFoodDetailsView({ name, whyAvoidDescription, source
                 </Row>
                 <GapColumn space={20} />
                 {otherConsiderations.map((cause, index) => (
-                    <Row key={index} style={{ alignItems: 'baseline', marginBottom: 5 }}>
+                    <Row key={index} style={{ alignItems: 'baseline', marginBottom: 5, width: '95%' }}>
                         <ThemedText lightColor="red" darkColor="red" style={{ marginRight: 10 }}>{"🔘"}</ThemedText>
                         <ThemedText>{cause}</ThemedText>
                     </Row>
@@ -240,7 +242,7 @@ export default function AvoidFoodDetailsView({ name, whyAvoidDescription, source
                 </Row>
                 <GapColumn space={20} />
                 {safeCookingGuidelines.map((cause, index) => (
-                    <Row key={index} style={{ alignItems: 'baseline', marginBottom: 5 }}>
+                    <Row key={index} style={{ alignItems: 'baseline', marginBottom: 5, width: '95%' }}>
                         <ThemedText type="small12" style={{ marginRight: 10 }}>{"🟢"}</ThemedText>
                         <ThemedText>{cause}</ThemedText>
                     </Row>
@@ -275,14 +277,10 @@ export default function AvoidFoodDetailsView({ name, whyAvoidDescription, source
                         <Row style={{
                             alignItems: 'center'
                         }}>
-                            <ThemedText type="defaultSemiBold" style={{
-                                flex: 1,
-                                backgroundColor: isDarkMode ? '' : '', padding: 10,
-                                borderRadius: 10
-                            }} >{alternative}</ThemedText>
-                            <TextButton type="replace" title="Learn More →" navigateTo={'/(tabs)/home/food-details'} style={{
-                                fontSize: 12,
-                            }}/>
+                            <ThemedText type="small12" style={{ marginRight: 10 }}>{"🟢"}</ThemedText>
+                            <ThemedText style={{
+                                width: '95%',
+                            }}>{alternative}</ThemedText>
                         </Row>
                         <GapColumn space={10} />
                     </Column>

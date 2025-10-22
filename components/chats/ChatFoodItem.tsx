@@ -2,17 +2,29 @@ import { FoodItem } from "@/src/interfaces/Conversations";
 import { Ionicons } from "@expo/vector-icons";
 import { View, TouchableOpacity, Text, useColorScheme, StyleSheet } from "react-native";
 import FoodTag from "../FoodTag";
+import { useRouter } from "expo-router";
 
-export default function ChatRenderFoodItem({foodItem} : {foodItem: FoodItem}) {
+export default function ChatRenderFoodItem({ foodItem }: { foodItem: FoodItem }) {
     const isDark = useColorScheme() === 'dark';
+    const router = useRouter();
+
+    const description = foodItem.safety_type === 'avoid' ? foodItem.details.whyAvoidDescription : foodItem.details.description;
+    const lastVerified = foodItem.verifiedDate;
+    const alternatives = foodItem.safety_type === 'safe' ? foodItem.similarFoods : foodItem.safety_type === 'limit' ? foodItem.details.saferAlternatives : foodItem.details.betterAlternatives;
+    const guidelines = foodItem.safety_type === 'safe' ? foodItem.details.preparationGuidelines : foodItem.safety_type === 'limit' ? foodItem.details.safeConsumptionGuidelines : foodItem.details.safeCookingGuidelines;
+    const benefits = foodItem.safety_type === 'safe' ? foodItem.details.nutritionalBenefits : undefined;
+    const trimester = foodItem.details.trimesterNotes;
+
     return (
-        <View style={[styles.foodCard, { backgroundColor: isDark ? '#2A2A2A' : '#F8F9FA' }]}>
+        <TouchableOpacity onPress={() => {
+            router.push(`/home/food-details?id=${foodItem.id}`)
+        }} style={[styles.foodCard, { backgroundColor: isDark ? '#2A2A2A' : '#F8F9FA' }]}>
             <View style={styles.foodHeader}>
-                <FoodTag type={foodItem.status} />
+                <FoodTag type={foodItem.safety_type} />
                 <Text style={[styles.foodName, { color: isDark ? '#FFFFFF' : '#1F2937' }]}>
                     {foodItem.name}
                 </Text>
-                {foodItem.status === 'limit' && (
+                {foodItem.safety_type === 'limit' && (
                     <TouchableOpacity style={styles.guidelinesButton}>
                         <Text style={styles.guidelinesText}>Guidelines</Text>
                     </TouchableOpacity>
@@ -20,29 +32,29 @@ export default function ChatRenderFoodItem({foodItem} : {foodItem: FoodItem}) {
             </View>
 
             <Text style={[styles.foodDescription, { color: isDark ? '#D1D5DB' : '#6B7280' }]}>
-                {foodItem.description}
+                {description}
             </Text>
 
-            {foodItem.lastVerified && (
+            {lastVerified && (
                 <View style={styles.verifiedContainer}>
                     <Ionicons name="checkmark-circle-outline" size={16} color="#10B981" />
                     <Text style={[styles.verifiedText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                        Last verified: {foodItem.lastVerified}
+                        Last verified: {lastVerified}
                     </Text>
                 </View>
             )}
 
-            {foodItem.alternatives && (
+            {alternatives && Array.isArray(alternatives) && (
                 <View style={styles.alternativesContainer}>
                     <Text style={[styles.alternativesTitle, { color: isDark ? '#FFFFFF' : '#1F2937' }]}>
-                        However, you can safely enjoy these delicious alternatives:
+                        {foodItem.safety_type === 'avoid' ? 'Better alternatives to enjoy:' : 'However, you can safely enjoy these delicious alternatives:'}
                     </Text>
                     <View style={[styles.alternativesList, { backgroundColor: isDark ? '#1F2937' : '#F0FDF4' }]}>
-                        {foodItem.alternatives.map((alt: string, index: number) => (
+                        {alternatives.map((alt: any, index: number) => (
                             <View key={index} style={styles.alternativeItem}>
                                 <Ionicons name="checkmark-circle" size={16} color="#10B981" />
                                 <Text style={[styles.alternativeText, { color: isDark ? '#D1D5DB' : '#374151' }]}>
-                                    {alt}
+                                    {alt.name || alt}
                                 </Text>
                             </View>
                         ))}
@@ -50,13 +62,13 @@ export default function ChatRenderFoodItem({foodItem} : {foodItem: FoodItem}) {
                 </View>
             )}
 
-            {foodItem.guidelines && (
+            {guidelines && (
                 <View style={styles.guidelinesContainer}>
                     <Text style={[styles.guidelinesTitle, { color: isDark ? '#FFFFFF' : '#1F2937' }]}>
                         Here's how to enjoy it safely:
                     </Text>
                     <View style={styles.guidelinesList}>
-                        {foodItem.guidelines.map((guideline: string, index: number) => {
+                        {guidelines.map((guideline: string, index: number) => {
                             const [title, description] = guideline.split(' - ');
                             return (
                                 <View
@@ -86,27 +98,27 @@ export default function ChatRenderFoodItem({foodItem} : {foodItem: FoodItem}) {
                 </View>
             )}
 
-            {foodItem.trimester && (
+            {trimester && (
                 <View style={[styles.trimesterNote, { backgroundColor: isDark ? '#1E3A8A' : '#EFF6FF' }]}>
                     <Ionicons name="calendar-outline" size={16} color="#3B82F6" />
                     <View style={styles.trimesterContent}>
                         <Text style={[styles.trimesterTitle, { color: isDark ? '#93C5FD' : '#3B82F6' }]}>
-                            {foodItem.trimester ? `${foodItem.trimester.trimesterStage} Trimester Note` : "No Trimester Info"}
+                            Trimester Note
                         </Text>
                         <Text style={[styles.trimesterText, { color: isDark ? '#DBEAFE' : '#1E40AF' }]}>
-                            {foodItem.trimester ? `${foodItem.trimester.trimesterNote}` : "No Trimester Info"}
+                            {trimester}
                         </Text>
                     </View>
                 </View>
             )}
 
-            {foodItem.benefits && (
+            {benefits && (
                 <View style={styles.benefitsContainer}>
                     <Text style={[styles.benefitsTitle, { color: isDark ? '#FFFFFF' : '#1F2937' }]}>
                         Benefits for pregnancy:
                     </Text>
                     <View style={styles.benefitsList}>
-                        {foodItem.benefits.map((benefit: string, index: number) => (
+                        {benefits.map((benefit: string, index: number) => (
                             <View key={index} style={styles.benefitItem}>
                                 <View style={styles.benefitDot} />
                                 <Text style={[styles.benefitText, { color: isDark ? '#D1D5DB' : '#374151' }]}>
@@ -130,35 +142,19 @@ export default function ChatRenderFoodItem({foodItem} : {foodItem: FoodItem}) {
                         </TouchableOpacity>
                     </View>
 
-                    {foodItem.sources.slice(0, 3).map((source: any, index: number) => (
-                        <View key={index} style={styles.sourceItem}>
-                            <View style={[styles.sourceNumber, { backgroundColor: '#3B82F6' }]}>
-                                <Text style={styles.sourceNumberText}>{index + 1}</Text>
-                            </View>
-                            <View style={styles.sourceContent}>
-                                <Text style={[styles.sourceName, { color: isDark ? '#FFFFFF' : '#1F2937' }]}>
-                                    {source.name}
-                                </Text>
-                                <Text style={[styles.sourceDescription, { color: isDark ? '#D1D5DB' : '#6B7280' }]}>
-                                    {source.description}
-                                </Text>
-                                <View style={styles.sourceFooter}>
-                                    <Text style={[styles.sourceUpdated, { color: isDark ? '#9CA3AF' : '#9CA3AF' }]}>
-                                        Updated: {source.updated}
-                                    </Text>
-                                    {source.verified && (
-                                        <View style={styles.verifiedBadge}>
-                                            <Ionicons name="checkmark" size={12} color="#10B981" />
-                                            <Text style={styles.verifiedBadgeText}>Verified</Text>
-                                        </View>
-                                    )}
-                                </View>
-                            </View>
+                    <View style={styles.sourceItem}>
+                        <View style={[styles.sourceNumber, { backgroundColor: '#3B82F6' }]}>
+                            <Text style={styles.sourceNumberText}>1</Text>
                         </View>
-                    ))}
+                        <View style={styles.sourceContent}>
+                            <Text style={[styles.sourceName, { color: isDark ? '#FFFFFF' : '#1F2937' }]}>
+                                {foodItem.sources}
+                            </Text>
+                        </View>
+                    </View>
                 </View>
             )}
-        </View>
+        </TouchableOpacity>
     )
 }
 

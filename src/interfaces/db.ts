@@ -6,7 +6,8 @@ export interface ChatMessage {
     conversation_id: string;
     message_type: MessageSenderType;
     content: string | null;
-    food_item_details: any | null; // Or a more specific type if available
+    foods?: any | null; // Or a more specific type if available
+    food_id?: string | null;
 }
 
 /**

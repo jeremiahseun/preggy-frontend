@@ -1,8 +1,9 @@
 import { getFoodById } from "@/core/services/supabaseService";
+import { FoodItem } from "@/src/interfaces/Conversations";
 import { create } from "zustand";
 
 interface FoodDetailsStore {
-    foodDetails: any | null;
+    foodDetails: FoodItem | any | null;
     isLoading: boolean;
     error: string | null;
     fetchFoodDetails: (id: string) => Promise<void>;
@@ -22,7 +23,7 @@ export const useFoodDetailsStore = create<FoodDetailsStore>((set) => ({
                 console.log(`Error fetching food details: ${error.message}`);
                 set({ error: error.message, isLoading: false });
             } else if (data) {
-                console.log("Food details fetched successfully!");
+                console.log(`Successfully fetched food details: ${JSON.stringify(data)}`);
                 set({ foodDetails: data, isLoading: false });
             }
         } catch (e: any) {

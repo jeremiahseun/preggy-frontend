@@ -71,7 +71,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             conversation_id: conversationId,
             message_type: 'user',
             content: content,
-            food_item_details: null,
+            foods: null,
         };
 
         set(state => ({
@@ -88,7 +88,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 conversation_id: conversationId,
                 message_type: 'assistant',
                 content: aiResponse.content,
-                food_item_details: aiResponse.foodItem || null,
+                foods: aiResponse.foodItem || null,
             };
 
             set(state => ({
