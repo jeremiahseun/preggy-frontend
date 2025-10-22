@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import React from "react";
 import { View, ScrollView, useColorScheme } from "react-native";
-import { IconButton, TextButton } from "../Buttons";
+import { IconButton } from "../Buttons";
 import Column from "../Column";
 import SimilarFoodItem from "../food_details/SimilarFoodItem";
 import FoodTag from "../FoodTag";
@@ -9,15 +9,10 @@ import { GapRow, GapColumn } from "../Gap";
 import Row from "../Row";
 import { ThemedText } from "../ThemedText";
 import { ThemedView } from "../ThemedView";
-import LeafIcon from '@/assets/icons/leaf.svg';
-import CheckIcon from '@/assets/icons/check.svg';
-import CalendarIcon from '@/assets/icons/calendar.svg';
-import AlertIcon from '@/assets/icons/alert.svg';
 import BorderContainer from "../widgets/BorderContainer";
 import CircleContainer from "../CircleContainer";
 import InfoCard from "../food_details/InfoCard";
-import InfoIcon from '@/assets/icons/info.svg';
-import ListCheckIcon from '@/assets/icons/listcheck.svg';
+import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
 
 interface SafeSimilarFoodItem {
     name: string;
@@ -63,165 +58,309 @@ type SafeFoodDetailsProps = {
  * }
  */
 
-export default function SafeFoodDetailsView({ name, description, sources, verifiedDate, nutritionalBenefits, preparationGuidelines, trimesterNotes, whyItThisSafe, ingredientsToWatch, similarFoods }: SafeFoodDetailsProps) {
-    const isDarkMode = useColorScheme() === 'dark';
-    return (
-        <ThemedView style={{
-            paddingHorizontal: 20,
-        }}>
 
-            <BorderContainer
-                darkModeBorderColor="#046610"
-                lightModeBorderColor="green"
-                darkModeFillColor="#011a07"
-                lightModeFillColor="#dff2e3"
-            >
-                <Row>
+export default function SafeFoodDetailsView({
+    name,
+    description,
+    sources,
+    verifiedDate,
+    nutritionalBenefits,
+    preparationGuidelines,
+    trimesterNotes,
+    whyItThisSafe,
+    ingredientsToWatch,
+    similarFoods
+}: SafeFoodDetailsProps) {
+    const isDarkMode = useColorScheme() === 'dark';
+
+    const colors = {
+        safe: {
+            primary: isDarkMode ? '#66D9A6' : '#10B981',
+            secondary: isDarkMode ? '#1F4838' : '#D1FAE5',
+            background: isDarkMode ? '#0F2419' : '#ECFDF5',
+            border: isDarkMode ? '#2D5F48' : '#A7F3D0',
+            text: isDarkMode ? '#A7F3D0' : '#065F46',
+        }
+    };
+
+    return (
+        <ThemedView style={{ paddingHorizontal: 20 }}>
+            {/* Hero Card */}
+            <View style={{
+                borderRadius: 24,
+                padding: 24,
+                backgroundColor: colors.safe.background,
+                borderWidth: 2,
+                borderColor: colors.safe.border,
+                shadowColor: colors.safe.primary,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.1,
+                shadowRadius: 12,
+                elevation: 5,
+            }}>
+                <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <FoodTag type={'safe'} />
-                    <View style={{ flex: 1 }} />
                     <Column style={{ alignItems: 'flex-end' }}>
-                        <ThemedText type='small14'>Checked just now</ThemedText>
-                        <Row style={{
-                            alignItems: 'center'
-                        }}>
-                            <CheckIcon color={'#4AC477FF'} width={12} height={12} />
-                            <GapRow space={5} />
-                            <ThemedText lightColor="green" darkColor="green" type='small12'>Verified</ThemedText>
+                        <Row style={{ alignItems: 'center', marginBottom: 4 }}>
+                            <FontAwesome5 name="check-circle" size={14} color={colors.safe.primary} solid />
+                            <GapRow space={6} />
+                            <ThemedText
+                                lightColor={colors.safe.text}
+                                darkColor={colors.safe.primary}
+                                style={{ fontSize: 12, fontWeight: '600' }}
+                            >
+                                Verified
+                            </ThemedText>
                         </Row>
+                        <ThemedText type='small12' style={{ opacity: 0.7 }}>
+                            Updated just now
+                        </ThemedText>
                     </Column>
                 </Row>
-                <GapColumn space={20} />
-                <ThemedText type="title">{name}</ThemedText>
 
-                <GapColumn space={15} />
-                <BorderContainer
-                    darkModeBorderColor="#046610"
-                    lightModeBorderColor="green"
-                    darkModeFillColor="#0b2e1a"
-                    lightModeFillColor="#cce8d4"
+                <GapColumn space={20} />
+
+                <ThemedText
+                    type="title"
+                    style={{
+                        fontSize: 28,
+                        fontWeight: '700',
+                        color: isDarkMode ? '#FFFFFF' : '#1F2937'
+                    }}
                 >
-                    <ThemedText lightColor="#008B00" darkColor="#00FF00" type="defaultSemiBold">Safe to eat during pregnancy</ThemedText>
-                    <GapColumn space={10} />
-                    <ThemedText>{description}</ThemedText>
-                </BorderContainer>
-                <GapColumn space={20} />
-                <Column style={{
-                    width: "100%",
-                    height: 'auto',
-                    borderRadius: 6,
-                    padding: 15,
-                    backgroundColor: isDarkMode ? '#171a1f' : '#FAFAFBFF',
+                    {name}
+                </ThemedText>
+
+                <GapColumn space={16} />
+
+                <View style={{
+                    borderRadius: 16,
+                    padding: 16,
+                    backgroundColor: isDarkMode ? 'rgba(102, 217, 166, 0.15)' : 'rgba(16, 185, 129, 0.1)',
                 }}>
-                    <Row style={{
-                        alignItems: 'center'
-                    }}>
-                        <LeafIcon color={'#4AC477FF'} width={16} height={16} />
-                        <GapRow space={10} />
-                        <ThemedText type="defaultSemiBold">Sources: {sources}</ThemedText>
+                    <Row style={{ alignItems: 'center', marginBottom: 10 }}>
+                        <FontAwesome5 name="shield-alt" size={16} color={colors.safe.primary} solid />
+                        <GapRow space={8} />
+                        <ThemedText
+                            style={{
+                                fontSize: 15,
+                                fontWeight: '700',
+                                color: colors.safe.primary
+                            }}
+                        >
+                            Safe to Enjoy During Pregnancy
+                        </ThemedText>
                     </Row>
-                    <Row style={{
-                        alignItems: 'center'
-                    }}>
-                        <CheckIcon color={'#4AC477FF'} width={12} height={12} />
-                        <GapRow space={10} />
-                        <ThemedText style={{
-                            fontWeight: '600'
-                        }} type="small14"> Last verified: {verifiedDate}</ThemedText>
-                    </Row>
-                </Column>
-            </BorderContainer>
-
-            <GapColumn space={40} />
-
-            <ThemedText type="subtitle">Key Information</ThemedText>
-            <GapColumn space={20} />
-
-            <BorderContainer
-                darkModeBorderColor="#969393"
-                lightModeBorderColor="grey"
-                darkModeFillColor=''
-                lightModeFillColor="white"
-            >
-                <Row style={{
-                    alignItems: 'center'
-                }}>
-                    <CircleContainer color={isDarkMode ? "black" : '#dff2e3'} radius={40}>
-                        <LeafIcon color="green" width={20} height={20} />
-                    </CircleContainer>
-                    <GapRow space={15} />
                     <ThemedText style={{
-                        fontWeight: '700'
-                    }} type="defaultSemiBold">Nutritional Benefits</ThemedText>
-                </Row>
-                <GapColumn space={20} />
-                {nutritionalBenefits.map((benefit, index) => (
-                    <Row key={index} style={{ alignItems: 'baseline', marginBottom: 5 }}>
-                        <ThemedText lightColor="green" darkColor="green" style={{ marginRight: 10 }}>{"\u2713"}</ThemedText>
-                        <ThemedText>{benefit}</ThemedText>
-                    </Row>
-                ))}
-            </BorderContainer>
+                        fontSize: 15,
+                        lineHeight: 22,
+                        opacity: 0.9
+                    }}>
+                        {description}
+                    </ThemedText>
+                </View>
 
-            <GapColumn space={20} />
+                <GapColumn space={16} />
 
-            <BorderContainer
-                darkModeBorderColor="#969393"
-                lightModeBorderColor="grey"
-                darkModeFillColor=''
-                lightModeFillColor="white"
-            >
-                <Row style={{
-                    alignItems: 'center'
+                <View style={{
+                    borderRadius: 12,
+                    padding: 14,
+                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
                 }}>
-                    <CircleContainer color={isDarkMode ? "black" : '#dff2e3'} radius={40}>
-                        <CheckIcon color="green" width={20} height={20} />
-                    </CircleContainer>
-                    <GapRow space={15} />
-                    <ThemedText style={{
-                        fontWeight: '700'
-                    }} type="defaultSemiBold">Preparation Guidelines</ThemedText>
-                </Row>
-                <GapColumn space={20} />
-                {preparationGuidelines.map((guideline, index) => (
-                    <Row key={index} style={{ alignItems: 'baseline', marginBottom: 5 }}>
-                        <ThemedText lightColor="green" darkColor="green" style={{ marginRight: 10 }}>{"\u2713"}</ThemedText>
-                        <ThemedText>{guideline}</ThemedText>
+                    <Row style={{ alignItems: 'center', marginBottom: 8 }}>
+                        <FontAwesome5 name="book-medical" size={14} color={colors.safe.primary} />
+                        <GapRow space={8} />
+                        <ThemedText style={{ fontSize: 13, fontWeight: '600', flex: 1 }}>
+                            Sources: {sources}
+                        </ThemedText>
                     </Row>
-                ))}
-            </BorderContainer>
+                    <Row style={{ alignItems: 'center' }}>
+                        <FontAwesome name="calendar" size={12} color={colors.safe.primary} />
+                        <GapRow space={8} />
+                        <ThemedText style={{ fontSize: 12, opacity: 0.8 }}>
+                            Last verified: {verifiedDate}
+                        </ThemedText>
+                    </Row>
+                </View>
+            </View>
 
-            <GapColumn space={20} />
+            <GapColumn space={32} />
 
+            {/* Key Information Section */}
+            <Row style={{ alignItems: 'center', marginBottom: 16 }}>
+                <View style={{
+                    width: 4,
+                    height: 24,
+                    backgroundColor: colors.safe.primary,
+                    borderRadius: 2,
+                    marginRight: 12
+                }} />
+                <ThemedText
+                    type="subtitle"
+                    style={{
+                        fontSize: 22,
+                        fontWeight: '700'
+                    }}
+                >
+                    Key Information
+                </ThemedText>
+            </Row>
 
-            <Column style={{
-                width: "100%",
-                height: 'auto',
-                borderRadius: 6,
-                padding: 15,
-                backgroundColor: isDarkMode ? '#171a1f' : '#FAFAFBFF',
+            {/* Nutritional Benefits */}
+            <View style={{
+                borderRadius: 20,
+                padding: 20,
+                backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#FFFFFF',
+                borderWidth: 1,
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#F3F4F6',
+                marginBottom: 16,
             }}>
-                <Row style={{
-                    alignItems: 'center'
-                }}>
-                    <CalendarIcon width={16} height={16} />
-                    <GapRow space={10} />
-
-                    <ThemedText type="subTitle">2nd Trimester Notes</ThemedText>
+                <Row style={{ alignItems: 'center', marginBottom: 16 }}>
+                    <View style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 24,
+                        backgroundColor: isDarkMode ? 'rgba(102, 217, 166, 0.2)' : '#D1FAE5',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <FontAwesome5 name="leaf" size={20} color={colors.safe.primary} />
+                    </View>
+                    <GapRow space={12} />
+                    <ThemedText style={{ fontSize: 18, fontWeight: '700' }}>
+                        Nutritional Benefits
+                    </ThemedText>
                 </Row>
-                <GapColumn space={5} />
-                <ThemedText>{trimesterNotes}</ThemedText>
-            </Column>
-            <GapColumn space={20} />
-            <InfoCard title="Why is this safe?" icon={<InfoIcon width={16} height={16} />}>
-                <ThemedText>{whyItThisSafe}</ThemedText>
+
+                {nutritionalBenefits.map((benefit, index) => (
+                    <Row key={index} style={{
+                        alignItems: 'flex-start',
+                        marginBottom: index < nutritionalBenefits.length - 1 ? 12 : 0,
+                        paddingLeft: 8
+                    }}>
+                        <View style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: 10,
+                            backgroundColor: isDarkMode ? 'rgba(102, 217, 166, 0.2)' : '#D1FAE5',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: 12,
+                            marginTop: 2
+                        }}>
+                            <FontAwesome name="check" size={11} color={colors.safe.primary} />
+                        </View>
+                        <ThemedText style={{
+                            flex: 1,
+                            fontSize: 15,
+                            lineHeight: 22
+                        }}>
+                            {benefit}
+                        </ThemedText>
+                    </Row>
+                ))}
+            </View>
+
+            {/* Preparation Guidelines */}
+            <View style={{
+                borderRadius: 20,
+                padding: 20,
+                backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#FFFFFF',
+                borderWidth: 1,
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#F3F4F6',
+                marginBottom: 16,
+            }}>
+                <Row style={{ alignItems: 'center', marginBottom: 16 }}>
+                    <View style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 24,
+                        backgroundColor: isDarkMode ? 'rgba(102, 217, 166, 0.2)' : '#D1FAE5',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <FontAwesome5 name="utensils" size={18} color={colors.safe.primary} />
+                    </View>
+                    <GapRow space={12} />
+                    <ThemedText style={{ fontSize: 18, fontWeight: '700' }}>
+                        Preparation Guidelines
+                    </ThemedText>
+                </Row>
+
+                {preparationGuidelines.map((guideline, index) => (
+                    <Row key={index} style={{
+                        alignItems: 'flex-start',
+                        marginBottom: index < preparationGuidelines.length - 1 ? 12 : 0,
+                        paddingLeft: 8
+                    }}>
+                        <View style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: 10,
+                            backgroundColor: isDarkMode ? 'rgba(102, 217, 166, 0.2)' : '#D1FAE5',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: 12,
+                            marginTop: 2
+                        }}>
+                            <FontAwesome name="check" size={11} color={colors.safe.primary} />
+                        </View>
+                        <ThemedText style={{
+                            flex: 1,
+                            fontSize: 15,
+                            lineHeight: 22
+                        }}>
+                            {guideline}
+                        </ThemedText>
+                    </Row>
+                ))}
+            </View>
+
+            {/* Trimester Notes */}
+            <View style={{
+                borderRadius: 20,
+                padding: 20,
+                backgroundColor: isDarkMode ? 'rgba(147, 197, 253, 0.1)' : '#EFF6FF',
+                borderWidth: 1,
+                borderColor: isDarkMode ? 'rgba(147, 197, 253, 0.2)' : '#DBEAFE',
+                marginBottom: 16,
+            }}>
+                <Row style={{ alignItems: 'center', marginBottom: 12 }}>
+                    <FontAwesome name="calendar-o" size={18} color={isDarkMode ? '#93C5FD' : '#3B82F6'} />
+                    <GapRow space={10} />
+                    <ThemedText style={{ fontSize: 18, fontWeight: '700' }}>
+                        2nd Trimester Notes
+                    </ThemedText>
+                </Row>
+                <ThemedText style={{ fontSize: 15, lineHeight: 22, opacity: 0.9 }}>
+                    {trimesterNotes}
+                </ThemedText>
+            </View>
+
+            {/* Expandable Cards */}
+            <InfoCard
+                title="Why is this safe?"
+                icon={<FontAwesome5 name="info-circle" size={16} color={isDarkMode ? '#93C5FD' : '#3B82F6'} />}
+            >
+                <ThemedText style={{ fontSize: 15, lineHeight: 22 }}>
+                    {whyItThisSafe}
+                </ThemedText>
             </InfoCard>
 
-            <GapColumn space={20} />
-            <InfoCard title="Ingredients to watch" icon={<ListCheckIcon width={16} height={16} />}>
-                <ThemedText>{ingredientsToWatch.join(', ')}</ThemedText>
+            <GapColumn space={16} />
+
+            <InfoCard
+                title="Ingredients to watch"
+                icon={<FontAwesome5 name="eye" size={16} color={isDarkMode ? '#FCD34D' : '#F59E0B'} />}
+            >
+                <ThemedText style={{ fontSize: 15, lineHeight: 22 }}>
+                    {ingredientsToWatch.join(', ')}
+                </ThemedText>
             </InfoCard>
 
-            <GapColumn space={40} />
+            <GapColumn space={32} />
+
+            {/* Action Buttons */}
             <IconButton
                 title="Save to Favorites"
                 iconName="heart"
@@ -229,7 +368,7 @@ export default function SafeFoodDetailsView({ name, description, sources, verifi
                 buttonColor={Colors.primary}
                 textColor={'white'}
             />
-            <GapColumn space={10} />
+            <GapColumn space={12} />
             <IconButton
                 title="Export to PDF"
                 iconName="doc.text"
@@ -238,9 +377,28 @@ export default function SafeFoodDetailsView({ name, description, sources, verifi
                 textColor={'white'}
             />
 
-            <GapColumn space={40} />
-            <ThemedText type="subtitle">You might also like</ThemedText>
-            <GapColumn space={20} />
+            <GapColumn space={32} />
+
+            {/* Similar Foods Section */}
+            <Row style={{ alignItems: 'center', marginBottom: 16 }}>
+                <View style={{
+                    width: 4,
+                    height: 24,
+                    backgroundColor: colors.safe.primary,
+                    borderRadius: 2,
+                    marginRight: 12
+                }} />
+                <ThemedText
+                    type="subtitle"
+                    style={{
+                        fontSize: 22,
+                        fontWeight: '700'
+                    }}
+                >
+                    You might also like
+                </ThemedText>
+            </Row>
+
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {similarFoods.map((food, index) => (
                     <SimilarFoodItem
@@ -251,10 +409,9 @@ export default function SafeFoodDetailsView({ name, description, sources, verifi
                         image={food.image}
                     />
                 ))}
-
             </ScrollView>
-            <GapColumn space={40} />
 
+            <GapColumn space={40} />
         </ThemedView>
-    )
+    );
 }
