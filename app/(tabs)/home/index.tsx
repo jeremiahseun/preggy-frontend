@@ -175,7 +175,7 @@ export default function HomeScreen() {
                         date={getRealDateTime(new Date(item.created_at))}
                         title={item.name}
                         source={item.sources}
-                        description={item.details?.description ?? 'No description available'}
+                        description={item.details.description ?? item.details.whyAvoidDescription ?? 'No description available'}
                     />
                 )}
                 ListHeaderComponent={renderListHeader}

@@ -50,11 +50,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     // Get token from saved storage
     getToken: async () => {
-        console.log("Getting token...")
         const token = await StorageService.getData(tokenValue);
-        console.log(`Token: ${token}`)
         const isFirstTime = await StorageService.getData(isFirstTimeValue);
-        console.log(`Is first time: ${isFirstTime}`);
         if (isFirstTime !== null) {
             set({ isFirstTime });
         }
@@ -66,9 +63,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     // Initialize the auth state by listening to Supabase's auth changes
     initializeAuth: () => {
-        console.log('Initializing auth...');
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            console.log(`Initializing auth...: ${JSON.stringify(session)}`);
             set({ session, user: session?.user ?? null, isAuthenticated: !!session, isLoading: false });
             set({ token: session?.access_token ?? null });
             StorageService.saveData(session?.access_token, tokenValue);
@@ -76,14 +71,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         // Return the unsubscribe function for cleanup
         return () => {
-            console.log('Unsubscribing from auth...');
             subscription.unsubscribe();
         };
     },
 
     // Refresh Token
     refreshToken: async () => {
-        console.log('Refreshing token...');
         set({ isLoading: true, error: null });
         const { data, error } = await supabase.auth.refreshSession();
         if (error) {

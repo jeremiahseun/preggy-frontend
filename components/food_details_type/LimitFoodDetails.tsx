@@ -9,8 +9,6 @@ import { GapRow, GapColumn } from "../Gap";
 import Row from "../Row";
 import { ThemedText } from "../ThemedText";
 import { ThemedView } from "../ThemedView";
-import BorderContainer from "../widgets/BorderContainer";
-import CircleContainer from "../CircleContainer";
 import InfoCard from "../food_details/InfoCard";
 import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
 
@@ -86,6 +84,19 @@ export default function LimitFoodDetailsView({
         danger: {
             primary: isDarkMode ? '#FCA5A5' : '#EF4444',
             background: isDarkMode ? 'rgba(252, 165, 165, 0.1)' : '#FEE2E2',
+            border: isDarkMode ? 'rgba(252, 165, 165, 0.2)' : '#FECACA',
+            text: isDarkMode ? '#FCA5A5' : '#EF4444',
+        },
+        safe: {
+            primary: isDarkMode ? '#66D9A6' : '#10B981',
+            background: isDarkMode ? 'rgba(102, 217, 166, 0.08)' : '#F0FDF4',
+            border: isDarkMode ? 'rgba(102, 217, 166, 0.2)' : '#BBF7D0',
+            iconBackground: isDarkMode ? 'rgba(102, 217, 166, 0.2)' : '#D1FAE5',
+        },
+        info: {
+            primary: isDarkMode ? '#93C5FD' : '#3B82F6',
+            background: isDarkMode ? 'rgba(147, 197, 253, 0.1)' : '#EFF6FF',
+            border: isDarkMode ? 'rgba(147, 197, 253, 0.2)' : '#DBEAFE',
         }
     };
 
@@ -226,7 +237,7 @@ export default function LimitFoodDetailsView({
                         width: 48,
                         height: 48,
                         borderRadius: 24,
-                        backgroundColor: isDarkMode ? 'rgba(252, 211, 77, 0.2)' : '#FEF3C7',
+                        backgroundColor: colors.limit.secondary,
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
@@ -248,7 +259,7 @@ export default function LimitFoodDetailsView({
                             width: 20,
                             height: 20,
                             borderRadius: 10,
-                            backgroundColor: isDarkMode ? 'rgba(252, 211, 77, 0.2)' : '#FEF3C7',
+                            backgroundColor: colors.limit.secondary,
                             alignItems: 'center',
                             justifyContent: 'center',
                             marginRight: 12,
@@ -271,9 +282,9 @@ export default function LimitFoodDetailsView({
             <View style={{
                 borderRadius: 20,
                 padding: 20,
-                backgroundColor: isDarkMode ? 'rgba(252, 165, 165, 0.08)' : '#FEF2F2',
+                backgroundColor: colors.danger.background,
                 borderWidth: 1,
-                borderColor: isDarkMode ? 'rgba(252, 165, 165, 0.2)' : '#FECACA',
+                borderColor: colors.danger.border,
                 marginBottom: 16,
             }}>
                 <Row style={{ alignItems: 'center', marginBottom: 16 }}>
@@ -288,7 +299,7 @@ export default function LimitFoodDetailsView({
                         <FontAwesome5 name="heartbeat" size={20} color={colors.danger.primary} />
                     </View>
                     <GapRow space={12} />
-                    <ThemedText style={{ fontSize: 18, fontWeight: '700' }}>
+                    <ThemedText style={{ fontSize: 18, fontWeight: '700', color: colors.danger.text }}>
                         Health Considerations
                     </ThemedText>
                 </Row>
@@ -314,7 +325,8 @@ export default function LimitFoodDetailsView({
                         <ThemedText style={{
                             flex: 1,
                             fontSize: 15,
-                            lineHeight: 22
+                            lineHeight: 22,
+                            color: colors.danger.text
                         }}>
                             {consideration}
                         </ThemedText>
@@ -326,9 +338,9 @@ export default function LimitFoodDetailsView({
             <View style={{
                 borderRadius: 20,
                 padding: 20,
-                backgroundColor: isDarkMode ? 'rgba(102, 217, 166, 0.08)' : '#F0FDF4',
+                backgroundColor: colors.safe.background,
                 borderWidth: 1,
-                borderColor: isDarkMode ? 'rgba(102, 217, 166, 0.2)' : '#BBF7D0',
+                borderColor: colors.safe.border,
                 marginBottom: 16,
             }}>
                 <Row style={{ alignItems: 'center', marginBottom: 16 }}>
@@ -336,11 +348,11 @@ export default function LimitFoodDetailsView({
                         width: 48,
                         height: 48,
                         borderRadius: 24,
-                        backgroundColor: isDarkMode ? 'rgba(102, 217, 166, 0.2)' : '#D1FAE5',
+                        backgroundColor: colors.safe.iconBackground,
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
-                        <FontAwesome5 name="heart" size={20} color="#10B981" solid />
+                        <FontAwesome5 name="heart" size={20} color={colors.safe.primary} solid />
                     </View>
                     <GapRow space={12} />
                     <ThemedText style={{ fontSize: 18, fontWeight: '700' }}>
@@ -379,13 +391,13 @@ export default function LimitFoodDetailsView({
             <View style={{
                 borderRadius: 20,
                 padding: 20,
-                backgroundColor: isDarkMode ? 'rgba(147, 197, 253, 0.1)' : '#EFF6FF',
+                backgroundColor: colors.info.background,
                 borderWidth: 1,
-                borderColor: isDarkMode ? 'rgba(147, 197, 253, 0.2)' : '#DBEAFE',
+                borderColor: colors.info.border,
                 marginBottom: 16,
             }}>
                 <Row style={{ alignItems: 'center', marginBottom: 12 }}>
-                    <FontAwesome name="calendar-o" size={18} color={isDarkMode ? '#93C5FD' : '#3B82F6'} />
+                    <FontAwesome name="calendar-o" size={18} color={colors.info.primary} />
                     <GapRow space={10} />
                     <ThemedText style={{ fontSize: 18, fontWeight: '700' }}>
                         2nd Trimester Notes
@@ -399,7 +411,7 @@ export default function LimitFoodDetailsView({
             {/* Expandable Cards */}
             <InfoCard
                 title="Why limit this food?"
-                icon={<FontAwesome5 name="info-circle" size={16} color={isDarkMode ? '#93C5FD' : '#3B82F6'} />}
+                icon={<FontAwesome5 name="info-circle" size={16} color={colors.info.primary} />}
             >
                 <ThemedText style={{ fontSize: 15, lineHeight: 22 }}>
                     {whyLimitThisFood}
@@ -410,7 +422,7 @@ export default function LimitFoodDetailsView({
 
             <InfoCard
                 title="If you choose to consume"
-                icon={<FontAwesome5 name="list-ul" size={16} color={isDarkMode ? '#FCD34D' : '#F59E0B'} />}
+                icon={<FontAwesome5 name="list-ul" size={16} color={colors.limit.primary} />}
             >
                 <ThemedText style={{ fontSize: 15, lineHeight: 22 }}>
                     {ifYouChooseToConsume.join(', ')}
@@ -443,7 +455,7 @@ export default function LimitFoodDetailsView({
                 <View style={{
                     width: 4,
                     height: 24,
-                    backgroundColor: '#10B981',
+                    backgroundColor: colors.safe.primary,
                     borderRadius: 2,
                     marginRight: 12
                 }} />
