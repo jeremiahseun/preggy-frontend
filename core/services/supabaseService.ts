@@ -115,6 +115,65 @@ export async function getFoodById(foodId: string): Promise<{ data: any | null, e
     return { data, error: null };
 }
 
+/**
+ * Searches for foods by name.
+ * @param query The search query.
+ */
+export async function searchFoodsByName(query: string): Promise<{ data: any[] | null, error: any | null }> {
+    const { data, error } = await supabase
+        .from('foods')
+        .select('*')
+        .ilike('name', `%${query}%`)
+        .order('created_at', { ascending: false })
+        .limit(20); // Limit search results
+
+    if (error) {
+        console.error('Error searching foods:', error);
+        return { data: null, error };
+    }
+    return { data: data || [], error: null };
+}
+
+/**
+ * Fetches the latest 4 recent questions from cached_answers
+ */
+export async function getRecentQuestions(): Promise<{ data: any[] | null, error: any | null }> {
+    const { data, error } = await supabase
+        .from('cached_answers')
+        .select('question')
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+    if (error) {
+        console.error('Error fetching recent questions:', error);
+        return { data: null, error };
+    }
+    // Return only unique questions
+    const uniqueQuestions = data ? [...new Map(data.map(item => [item['question'], item])).values()] : [];
+    return { data: uniqueQuestions, error: null };
+}
+
+/**
+ * Searches for questions in cached_answers.
+ * @param query The search query.
+ */
+export async function searchQuestions(query: string): Promise<{ data: any[] | null, error: any | null }> {
+    const { data, error } = await supabase
+        .from('cached_answers')
+        .select('question')
+        .ilike('question', `%${query}%`)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+    if (error) {
+        console.error('Error searching questions:', error);
+        return { data: null, error };
+    }
+    // Return only unique questions
+    const uniqueQuestions = data ? [...new Map(data.map(item => [item['question'], item])).values()] : [];
+    return { data: uniqueQuestions, error: null };
+}
+
 
 // --- PROFILE FUNCTIONS ---
 

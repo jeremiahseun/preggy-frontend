@@ -1,66 +1,20 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FlashList } from '@shopify/flash-list';
-import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import FullWidthFoodItem from '@/components/food_details/FullWidthFoodItem';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import Row from '@/components/Row';
 import { GapRow } from '@/components/Gap';
-import { useNavigation } from 'expo-router';
-import { useLayoutEffect, useState } from 'react';
+import { useNavigation, useRouter } from 'expo-router';
+import { useLayoutEffect, useState, useEffect } from 'react';
 import appStyles from '@/constants/Styles';
 import FilterModal from '@/components/FilterModal';
-
-type FoodDataItem = {
-    id: string;
-    name: string;
-    type: 'safe' | 'limit' | 'avoid';
-    description: string;
-    image: string;
-    date: string;
-    source: string;
-};
-
-const mockFoodData: FoodDataItem[] = [
-    {
-        id: '1',
-        name: 'Grilled Salmon',
-        type: 'safe',
-        description: 'Rich in omega-3s',
-        image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=3570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        date: "2 hours ago",
-        source: "Source: NHS, WHO • Verified Today",
-    },
-    {
-        id: '2',
-        name: 'Avocado Toast',
-        type: 'safe',
-        description: 'Healthy fats and fiber',
-        image: "https://images.unsplash.com/photo-1584365685244-9adeb5a42142?q=80&w=3570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        date: "3 hours ago",
-        source: "Source: FDA, CDC • Verified Today",
-    },
-    {
-        id: '3',
-        name: 'Quinoa Salad',
-        type: 'limit',
-        description: 'Complete protein source',
-        image: "https://images.unsplash.com/photo-1551248429-4097c68298b7?q=80&w=3570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        date: "5 hours ago",
-        source: "Source: EPA, FDA • Verified Today",
-    },
-    {
-        id: '4',
-        name: 'Greek Yogurt',
-        type: 'avoid',
-        description: 'Probiotics and calcium',
-        image: "https://images.unsplash.com/photo-1562119479-aa2403487351?q=80&w=3570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        date: "1 day ago",
-        source: "Source: American Pregnancy Association • Verified Yesterday",
-    },
-];
+import { useHomeStore } from '@/providers/home_store';
+import { getRealDateTime } from '@/src/utils/helpers';
+import useDebounce from '@/hooks/useDebounce';
 
 const filterCategories = [
     'Soups & Stews',
@@ -73,21 +27,44 @@ const filterCategories = [
 
 export default function AllChecksScreen() {
     const isDarkMode = useColorScheme() === 'dark';
-    const navigation = useNavigation();
+    const router = useRouter();
+
     const [isFilterModalVisible, setFilterModalVisible] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-    useLayoutEffect(() => {
-            navigation.setOptions({
-                title: 'All Foods',
+    const {
+        recentFoods,
+        searchedFoods,
+        isLoading,
+        error,
+        fetchRecentFoods,
+        searchFoods,
+        setSearchedFoods
+    } = useHomeStore();
 
-            });
-        }, [navigation]);
+
+    useEffect(() => {
+        if (recentFoods.length === 0) {
+            fetchRecentFoods();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (debouncedSearchQuery) {
+            searchFoods(debouncedSearchQuery);
+        } else {
+            setSearchedFoods(recentFoods);
+        }
+    }, [debouncedSearchQuery, recentFoods]);
 
     const handleSelectFilter = (filter: string) => {
         setSelectedFilter(filter);
         setFilterModalVisible(false);
     };
+
+    const listData = searchQuery ? searchedFoods : recentFoods;
 
     return (
         <ThemedView style={styles.container}>
@@ -95,7 +72,10 @@ export default function AllChecksScreen() {
                 <TextInput
                     placeholder='Search for food...'
                     placeholderTextColor='#9A9A9A'
-                    style={[styles.searchBar, { backgroundColor: isDarkMode ? '#171a1f' : '#FAFAFBFF', color: isDarkMode ? 'white' : 'black' }, appStyles.input]}>
+                    style={[styles.searchBar, { backgroundColor: isDarkMode ? '#171a1f' : '#FAFAFBFF', color: isDarkMode ? 'white' : 'black' }, appStyles.input]}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                >
                 </TextInput>
                 <GapRow space={10} />
                 <TouchableOpacity onPress={() => setFilterModalVisible(true)} style={[styles.filterButton, { backgroundColor: isDarkMode ? '#171a1f' : '#FAFAFBFF'}]}>
@@ -106,11 +86,34 @@ export default function AllChecksScreen() {
                     </Row>
                 </TouchableOpacity>
             </Row>
-            <FlashList
-                data={mockFoodData}
-                renderItem={({ item }) => <FullWidthFoodItem {...item} />}
 
+            {isLoading && <ActivityIndicator style={{ marginTop: 20 }} />}
+
+            {error && <ThemedText style={{ color: 'red', textAlign: 'center', marginTop: 20 }}>{error}</ThemedText>}
+
+            <FlashList
+                data={listData}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => router.push(`/home/food-details?id=${item.id}`)}>
+                        <FullWidthFoodItem
+                            // id={item.id}
+                            name={item.name}
+                            type={item.safety_type ?? 'safe'}
+                            description={item.details.description ?? item.details.whyAvoidDescription ?? 'No description available'}
+                            image={item.image_url ?? "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=3570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
+                            date={getRealDateTime(new Date(item.created_at))}
+                            source={item.sources}
+                        />
+                    </TouchableOpacity>
+                )}
                 contentContainerStyle={{ padding: 20 }}
+                ListEmptyComponent={() => (
+                    !isLoading && (
+                        <ThemedView style={styles.emptyContainer}>
+                            <ThemedText>No foods found.</ThemedText>
+                        </ThemedView>
+                    )
+                )}
             />
             <FilterModal
                 visible={isFilterModalVisible}
@@ -128,12 +131,17 @@ const styles = StyleSheet.create({
     },
     searchBar: {
         flex: 1,
-        // height: 40,
         paddingHorizontal: 15,
         borderRadius: 6,
     },
     filterButton: {
         padding: 8,
         borderRadius: 6,
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 50,
     }
 });
