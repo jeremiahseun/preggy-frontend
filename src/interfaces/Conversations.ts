@@ -37,7 +37,7 @@ type FoodsContainingSelectedFoodItem = {
 type BaseFoodItem = {
     id: string;
     name: string;
-    sources: string;
+    sources?: string;
     verifiedDate: string;
     trimesterNotes: string;
     details: any;
@@ -46,7 +46,7 @@ type BaseFoodItem = {
 // Safe Food Item
 export type SafeFoodItem = BaseFoodItem & {
     safety_type: "safe";
-    description: string;
+    description?: string;
     nutritionalBenefits: string[];
     preparationGuidelines: string[];
     whyItThisSafe: string;
@@ -57,7 +57,7 @@ export type SafeFoodItem = BaseFoodItem & {
 // Limit Food Item
 export type LimitFoodItem = BaseFoodItem & {
     safety_type: "limit";
-    description: string;
+    description?: string;
     safeConsumptionGuidelines: string[];
     healthConsiderations: string[];
     betterAlternatives: string[];
@@ -69,7 +69,7 @@ export type LimitFoodItem = BaseFoodItem & {
 // Avoid Food Item
 export type AvoidFoodItem = BaseFoodItem & {
     safety_type: "avoid";
-    whyAvoidDescription: string;
+    whyAvoidDescription?: string;
     whyAvoidRisk: WhyAvoidRisk[];
     otherConsiderations: string[];
     betterAlternatives: string[];

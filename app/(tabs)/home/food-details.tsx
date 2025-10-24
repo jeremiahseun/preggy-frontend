@@ -6,41 +6,31 @@ import React, { useEffect, useLayoutEffect } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import Row from '@/components/Row';
-import { GapColumn, GapRow } from '@/components/Gap';
+import { GapRow } from '@/components/Gap';
 import { Colors } from '@/constants/Colors';
-import FoodTag from '@/components/FoodTag';
-import Column from '@/components/Column';
-import TitleListCard from '@/components/food_details/TitleListCard';
-import LeafIcon from '@/assets/icons/leaf.svg';
-import CheckIcon from '@/assets/icons/check.svg';
-import CalendarIcon from '@/assets/icons/calendar.svg';
-import InfoIcon from '@/assets/icons/info.svg';
-import ListCheckIcon from '@/assets/icons/listcheck.svg';
-import InfoCard from '@/components/food_details/InfoCard';
-import SimilarFoodItem from '@/components/food_details/SimilarFoodItem';
-import { ScrollView } from 'react-native-gesture-handler';
-import { IconButton } from '@/components/Buttons';
 import SafeFoodDetailsView from '@/components/food_details_type/SafeFoodDetails';
 import LimitFoodDetailsView from '@/components/food_details_type/LimitFoodDetails';
 import AvoidFoodDetailsView from '@/components/food_details_type/AvoidFoodDetails';
 import { useFoodDetailsStore } from '@/providers/food_details_store';
-import { AvoidFoodItem, LimitFoodItem, SafeFoodItem } from '@/src/interfaces/Conversations';
+import { AvoidFoodItem, FoodItem, LimitFoodItem, SafeFoodItem } from '@/src/interfaces/Conversations';
 import { getMonthAndYearDateShort } from '@/src/utils/helpers';
 
 
 export default function FoodDetailsScreen() {
     const navigation = useNavigation();
     const isDarkMode = useColorScheme() === 'dark';
-    const params = useLocalSearchParams<{ id?: string }>();
-    const { id } = params;
+    const params = useLocalSearchParams<{ id?: string, foodItem?: string }>();
+    const { id, foodItem } = params;
 
-    const { foodDetails, isLoading, error, fetchFoodDetails } = useFoodDetailsStore();
+    const { foodDetails, isLoading, error, fetchFoodDetails, setFoodDetails } = useFoodDetailsStore();
 
     useEffect(() => {
-        if (id) {
+        if (foodItem) {
+            setFoodDetails(JSON.parse(foodItem));
+        } else if (id) {
             fetchFoodDetails(id);
         }
-    }, [id]);
+    }, [id, foodItem]);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -57,7 +47,7 @@ export default function FoodDetailsScreen() {
                 </Row>
             ),
         });
-    }, [navigation]);
+    }, [navigation, isLoading, error, foodDetails]);
 
     if (isLoading) {
         return (
@@ -88,7 +78,7 @@ export default function FoodDetailsScreen() {
         );
     }
 
-    const food = foodDetails as SafeFoodItem | LimitFoodItem | AvoidFoodItem;
+    const food = foodDetails as FoodItem;
 
     return (
         <ParallaxScrollView
@@ -147,8 +137,8 @@ export default function FoodDetailsScreen() {
                 ) : (
                     <SafeFoodDetailsView
                         name={food.name}
-                        description={foodDetails.details.description}
-                        sources={food.details.source ?? "General Food Safety Guidelines"}
+                        description={foodDetails.details?.description ?? "No description available"}
+                        sources={food.details?.source ?? "General Food Safety Guidelines"}
                         verifiedDate={getMonthAndYearDateShort(food.details.verifiedDate)}
                         ingredientsToWatch={food.details.ingredientsToWatch}
                         nutritionalBenefits={food.details.nutritionalBenefits}

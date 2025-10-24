@@ -44,6 +44,7 @@ function TextButton({ title, navigateTo, onPress, textColor, style, type = 'push
             if (onPress) {
                 console.log("onPress called")
                 onPress();
+                return;
             }
             type === 'push' ? router.push(navigateTo) : type === 'replace' ? router.replace(navigateTo) : router.dismissTo(navigateTo)
         }}>

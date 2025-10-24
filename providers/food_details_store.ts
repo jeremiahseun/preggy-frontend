@@ -7,6 +7,7 @@ interface FoodDetailsStore {
     isLoading: boolean;
     error: string | null;
     fetchFoodDetails: (id: string) => Promise<void>;
+    setFoodDetails: (foodDetails: FoodItem) => void;
 }
 
 export const useFoodDetailsStore = create<FoodDetailsStore>((set) => ({
@@ -30,5 +31,9 @@ export const useFoodDetailsStore = create<FoodDetailsStore>((set) => ({
             console.log(`An unexpected error occurred: ${e.message}`);
             set({ error: e.message, isLoading: false });
         }
+    },
+
+    setFoodDetails: (foodDetails: FoodItem) => {
+        set({ foodDetails, isLoading: false, error: null });
     },
 }));

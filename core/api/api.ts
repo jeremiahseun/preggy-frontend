@@ -37,13 +37,18 @@ baseUrl: string = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 }
 
 /// AUTH POST REQUEST
-    async authPost({ url, formData, token }: AuthRequest): Promise<Response> {
+    async authPost({ url, formData, token, isFormData }: AuthRequest): Promise<Response> {
+        const headers: any = {
+            "Authorization": `Bearer ${token}`
+        };
+
+        if (!isFormData) {
+            headers["Content-Type"] = "application/json";
+        }
+
     return await fetch(`${this.baseUrl}/${url}`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
+        headers,
         body: formData
     });
 }

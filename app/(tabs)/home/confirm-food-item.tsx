@@ -1,9 +1,9 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedScrollView, ThemedView } from '@/components/ThemedView';
 import appStyles from '@/constants/Styles';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { StyleSheet, Button, Image, View, ActivityIndicator, Pressable, useColorScheme, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import ImageView from '@/components/widgets/ImageView';
 import Column from '@/components/Column';
@@ -11,21 +11,42 @@ import { GapColumn, GapRow } from '@/components/Gap';
 import CircularCheckbox from '@/components/CircularCheckbox';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import Row from '@/components/Row';
-import { AuthButton, RouteNormalButton } from '@/components/Buttons';
+import { AuthButton, NormalButton } from '@/components/Buttons';
 import CircleContainer from '@/components/CircleContainer';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-
-const foodOptions = [
-    "Yes, this is Jollof Rice with Chicken",
-    "This is Fried Rice with Chicken",
-    "This is White Rice with Chicken Stew",
-];
+import { usePhotoCheckStore } from '@/providers/photo_check_store';
 
 export default function ConfirmFoodItemScreen() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [selectedOption, setSelectedOption] = useState<string | 'manual' | null>(foodOptions[0]);
+    const router = useRouter();
+    const { foodList, imageUri, searchFood, loading, foodItem } = usePhotoCheckStore();
+    const [selectedOption, setSelectedOption] = useState<string | 'manual' | null>(null);
     const [manualFoodName, setManualFoodName] = useState('');
     const isDarkMode = useColorScheme() === 'dark';
+
+    useEffect(() => {
+        if (foodList.length > 0) {
+            setSelectedOption(foodList[0]);
+        }
+    }, [foodList]);
+
+    useEffect(() => {
+        if (foodItem) {
+            router.replace({ pathname: '/(tabs)/home/food-details', params: { foodItem: JSON.stringify(foodItem) } });
+        }
+    }, [foodItem, router]);
+
+    const handleContinue = async () => {
+        let foodName = '';
+        if (selectedOption === 'manual') {
+            foodName = manualFoodName;
+        } else {
+            foodName = selectedOption || '';
+        }
+
+        if (foodName) {
+            await searchFood(foodName);
+        }
+    };
 
     return (
         <KeyboardAvoidingView
@@ -35,7 +56,7 @@ export default function ConfirmFoodItemScreen() {
             <ThemedScrollView style={appStyles.screen}>
                 <Column style={{ justifyContent: 'center' }}>
                     <GapColumn space={10} />
-                    <ImageView uri={'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'} />
+                    {imageUri && <ImageView uri={imageUri} />}
                     <GapColumn space={15} />
                     <View style={[styles.aiDetectionContainer, { backgroundColor: isDarkMode ? '#171a1f' : '#E8F0F7FF' }]}>
                         <Row>
@@ -45,11 +66,10 @@ export default function ConfirmFoodItemScreen() {
                             <GapRow space={10} />
                             <Column>
                                 <ThemedText type='defaultSemiBold'>AI Detection</ThemedText>
-                                <ThemedText type='small12'>95% confidence</ThemedText>
                             </Column>
                         </Row>
                         <GapColumn space={15} />
-                        <ThemedText style={{ textAlign: 'center' }} type='subTitle'>I think this is Jollof Rice with Chicken</ThemedText>
+                        <ThemedText style={{ textAlign: 'center' }} type='subTitle'>I think this is {foodList[0]}</ThemedText>
                         <GapColumn space={10} />
                         <ThemedText style={{ textAlign: 'center' }} type='small14'>Is this correct? Please confirm or choose the right option below.</ThemedText>
                     </View>
@@ -57,7 +77,7 @@ export default function ConfirmFoodItemScreen() {
                     <ThemedText type='subTitle'>Am I correct?</ThemedText>
                     <GapColumn space={15} />
 
-                    {foodOptions.map((option) => (
+                    {foodList.map((option) => (
                         <Pressable key={option} style={[styles.optionContainer, selectedOption === option && { backgroundColor: "#0F172A", borderColor: Colors.primary }]} onPress={() => setSelectedOption(option)}>
                             <Row style={{ alignItems: 'center' }}>
                                 <CircularCheckbox isChecked={selectedOption === option} onPress={() => setSelectedOption(option)} />
@@ -82,7 +102,7 @@ export default function ConfirmFoodItemScreen() {
                             />
                         </Row>
                     </Pressable>
-                    <RouteNormalButton type='replace' title="Continue" navigateTo="/(tabs)/home/food-details" />
+                    <NormalButton buttonText="Continue" onPress={handleContinue} isLoading={loading === 'search'} />
                     <GapColumn space={40} />
                 </Column>
             </ThemedScrollView>

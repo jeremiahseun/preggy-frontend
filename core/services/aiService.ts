@@ -34,3 +34,38 @@ export async function sendAiChatMessage(content: string, conversationId: string 
 
     return data.data; // Contains { response: { content, foodItem, ... } }
 }
+
+export async function confirmFoodPhoto(image: { uri: string; type: string; name: string }) {
+    const { token } = useAuthStore.getState();
+    if (!token) throw new Error('User not authenticated');
+
+    const formData = new FormData();
+    formData.append('picture', {
+        uri: image.uri,
+        name: image.name,
+        type: image.type,
+    } as any);
+
+    const response = await api.authPost({
+        url: 'ai/confirm-food-photo',
+        formData,
+        token,
+        isFormData: true,
+    });
+
+    return response.json();
+}
+
+export async function searchFoodByName(foodName: string) {
+    const { token } = useAuthStore.getState();
+    if (!token) throw new Error('User not authenticated');
+
+    const response = await api.authGet({
+        url: `ai/search-food`,
+        token,
+        queryParams: { foodName },
+        formData: null,
+    });
+
+    return response.json();
+}
