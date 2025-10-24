@@ -1,5 +1,5 @@
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Platform, useColorScheme, Pressable, PressableProps, ViewStyle, TouchableOpacity, TouchableOpacityProps } from "react-native"
+import { Platform, useColorScheme, ViewStyle, TouchableOpacity, TouchableOpacityProps } from "react-native"
 
 import { StyleProp } from 'react-native';
 type BoxContainerProps = {

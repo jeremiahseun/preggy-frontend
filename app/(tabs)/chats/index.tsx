@@ -9,6 +9,7 @@ import Row from '@/components/Row';
 import { useChatStore } from '@/providers/chat_store';
 import { useEffect } from 'react';
 import { ChatMessage } from '@/src/interfaces/db';
+import { useProfileStore } from '@/providers/profile_store';
 
 // Quick action suggestions
 const quickActions = [
@@ -26,6 +27,9 @@ export default function ChatsScreen() {
     const borderColor = useThemeColor({ light: '#F1F5F9', dark: 'grey' }, 'tint');
 
     const { chatHistory, isLoading, error, fetchChatHistory } = useChatStore();
+    const profile = useProfileStore((state) => state.profile);
+    const isLoadingProfile = useProfileStore((state) => state.isLoading);
+
 
     useEffect(() => {
         fetchChatHistory();
@@ -41,7 +45,7 @@ export default function ChatsScreen() {
 
     const handleQuickAction = (action: string) => {
         // Navigate to conversation with pre-filled prompt
-        router.push('/(tabs)/chats/conversation');
+        router.push(`/(tabs)/chats/conversation?action=${encodeURIComponent(action)}`);
     };
 
     const renderHeader = () => (
@@ -55,7 +59,7 @@ export default function ChatsScreen() {
                     </View>
                 </View>
                 <View style={styles.weekBadge}>
-                    <ThemedText style={styles.weekBadgeText}>Week 24</ThemedText>
+                    {isLoadingProfile ? <ActivityIndicator size="small" color="#92400E" /> : <ThemedText style={styles.weekBadgeText}>Week {profile?.current_week}</ThemedText>}
                 </View>
             </View>
 
@@ -161,9 +165,8 @@ export default function ChatsScreen() {
     }
 
     return (
-        <ThemedView style={[styles.container, { backgroundColor }]}>
-            <FlatList
-                contentInsetAdjustmentBehavior="automatic"
+        <ThemedView style={[styles.container, { backgroundColor, paddingTop: insets.top }]}>
+            <FlatList<ChatMessage>
                 data={chatHistory}
                 keyExtractor={(item) => item.conversation_id}
                 ListHeaderComponent={renderHeader}
@@ -192,7 +195,7 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         paddingHorizontal: 20,
-        paddingTop: 60,
+        paddingTop: 30,
         paddingBottom: 24,
         backgroundColor: 'transparent',
     },

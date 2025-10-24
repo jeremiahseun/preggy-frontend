@@ -7,7 +7,7 @@ export default function SettingsLayout() {
                 title: "Settings", headerBackButtonDisplayMode: 'minimal', animationMatchesGesture: true, headerLargeTitle: true, headerStyle: {
                     backgroundColor: 'transparent',
                 } }} />
-            <Stack.Screen name="edit-profile" options={{ title: 'Edit Profile' }} />
+            <Stack.Screen name="edit-profile" options={{ title: 'Edit Profile', headerBackButtonDisplayMode: 'minimal', }} />
             <Stack.Screen name="about-screen" options={{ title: 'About Preggy', headerBackButtonDisplayMode: 'minimal' }} />
         </Stack>
     );

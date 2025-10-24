@@ -77,14 +77,14 @@ export default function AllChecksScreen() {
                     onChangeText={setSearchQuery}
                 >
                 </TextInput>
-                <GapRow space={10} />
+                {/* <GapRow space={10} />
                 <TouchableOpacity onPress={() => setFilterModalVisible(true)} style={[styles.filterButton, { backgroundColor: isDarkMode ? '#171a1f' : '#FAFAFBFF'}]}>
                     <Row style={{alignItems: 'center'}}>
                         <ThemedText>{selectedFilter || 'Filter'}</ThemedText>
                         <GapRow space={5} />
                         <IconSymbol name='chevron.down' size={16} color={Colors.primary} />
                     </Row>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </Row>
 
             {isLoading && <ActivityIndicator style={{ marginTop: 20 }} />}
@@ -93,6 +93,8 @@ export default function AllChecksScreen() {
 
             <FlashList
                 data={listData}
+                style={{
+                }}
                 renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => router.push(`/home/food-details?id=${item.id}`)}>
                         <FullWidthFoodItem
@@ -106,7 +108,7 @@ export default function AllChecksScreen() {
                         />
                     </TouchableOpacity>
                 )}
-                contentContainerStyle={{ padding: 20 }}
+                contentContainerStyle={{ paddingVertical: 20 }}
                 ListEmptyComponent={() => (
                     !isLoading && (
                         <ThemedView style={styles.emptyContainer}>

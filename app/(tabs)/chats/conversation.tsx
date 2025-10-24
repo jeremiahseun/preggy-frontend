@@ -19,7 +19,6 @@ import TypingIndicator from '@/components/chats/TypingIndicator';
 import { Message } from '@/src/interfaces/Conversations';
 import NewConversationBar from '@/components/chats/ConversationBar';
 import ChatRenderFoodItem from '@/components/chats/ChatFoodItem';
-import ChatHeader from '@/components/chats/ChatHeader';
 import { useChatStore } from '@/providers/chat_store';
 
 
@@ -32,7 +31,7 @@ const ConversationScreen = () => {
     const [isLimitReached, setLimitReached] = useState(false);
 
     const isDark = colorScheme === 'dark';
-    const { id: conversationId } = useLocalSearchParams<{ id: string }>();
+    const { id: conversationId, action } = useLocalSearchParams<{ id: string, action?: string}>();
     const {
         activeConversationMessages,
         isLoadingConversation,
@@ -48,6 +47,23 @@ const ConversationScreen = () => {
             setTimeout(() => {
                 scrollViewRef.current?.scrollToEnd({ animated: true });
             }, 500);
+        }
+        if (action) {
+            const messageToSend = () => {
+                switch (action) {
+                    case 'Find Foods':
+                        return 'I am looking for food options that I can eat during my pregnancy.';
+                    case 'Exercises':
+                        return 'I want to know what exercises are safe during pregnancy.';
+                    case 'Sleep Tips':
+                        return 'I need tips for better sleep during pregnancy.';
+                    case 'Symptoms':
+                        return 'What are common symptoms during pregnancy and how to manage them?';
+                    default:
+                        break;
+                }
+            }
+            setMessage(messageToSend() || '');
         }
 
         // Cleanup function to clear messages when the component unmounts
@@ -139,9 +155,6 @@ const ConversationScreen = () => {
                 barStyle={isDark ? "light-content" : "dark-content"}
                 backgroundColor={isDark ? '#1F1F1F' : '#FFFFFF'}
             />
-
-            {/* Header */}
-            <ChatHeader />
             {/* Messages */}
             <KeyboardAvoidingView
                 style={styles.chatContainer}
